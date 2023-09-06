@@ -47,6 +47,10 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <trixnity.version>3.10.4</trixnity.version>
         <serialization.version>1.6.0</serialization.version>
+
+        <sonar.organization>dfuchss</sonar.organization>
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+        <sonar.projectKey>dfuchss_matrix-bot-base</sonar.projectKey>
     </properties>
     <dependencies>
         <dependency>
