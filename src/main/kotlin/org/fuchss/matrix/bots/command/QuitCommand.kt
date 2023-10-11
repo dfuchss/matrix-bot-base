@@ -17,7 +17,12 @@ class QuitCommand(private val config: IConfig) : Command() {
      * @param[roomId] The room to execute the command in.
      * @param[parameters] The parameters of the command.
      */
-    override suspend fun execute(matrixBot: MatrixBot, sender: UserId, roomId: RoomId, parameters: String) {
+    override suspend fun execute(
+        matrixBot: MatrixBot,
+        sender: UserId,
+        roomId: RoomId,
+        parameters: String
+    ) {
         if (!config.isBotAdmin(sender)) {
             matrixBot.room().sendMessage(roomId) { text("You are not an admin.") }
             return

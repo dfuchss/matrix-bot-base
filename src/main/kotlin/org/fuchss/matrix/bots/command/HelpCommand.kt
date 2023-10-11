@@ -17,7 +17,12 @@ class HelpCommand(private val config: IConfig, private val commandGetter: () -> 
      * @param[roomId] The room to show the help message in.
      * @param[parameters] The parameters of the command.
      */
-    override suspend fun execute(matrixBot: MatrixBot, sender: UserId, roomId: RoomId, parameters: String) {
+    override suspend fun execute(
+        matrixBot: MatrixBot,
+        sender: UserId,
+        roomId: RoomId,
+        parameters: String
+    ) {
         var helpMessage = "This is the JoinLink Bot. You can use the following commands:\n"
 
         for (command in commandGetter()) {

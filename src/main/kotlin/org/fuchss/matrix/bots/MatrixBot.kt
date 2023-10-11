@@ -31,7 +31,6 @@ import kotlin.reflect.KClass
  * This class provides encapsulates a [MatrixClient] and its [IConfig] to provide a high level bot interface.
  */
 class MatrixBot(private val matrixClient: MatrixClient, private val config: IConfig) {
-
     private val logger = LoggerFactory.getLogger(MatrixBot::class.java)
 
     private val runningTimestamp = Clock.System.now()
@@ -90,7 +89,10 @@ class MatrixBot(private val matrixClient: MatrixClient, private val config: ICon
      * @param[roomId] the roomId
      * @return the state event content
      */
-    suspend fun getStateEvent(type: String, roomId: RoomId): Result<StateEventContent> = matrixClient.api.rooms.getStateEvent(type, roomId)
+    suspend fun getStateEvent(
+        type: String,
+        roomId: RoomId
+    ): Result<StateEventContent> = matrixClient.api.rooms.getStateEvent(type, roomId)
 
     /**
      * Send a certain state event
@@ -108,9 +110,7 @@ class MatrixBot(private val matrixClient: MatrixClient, private val config: ICon
      * @param[roomId] the room to get the event from
      * @return the event
      */
-    suspend inline fun <reified C : StateEventContent> getStateEvent(
-        roomId: RoomId
-    ): Result<C> {
+    suspend inline fun <reified C : StateEventContent> getStateEvent(roomId: RoomId): Result<C> {
         val type = contentMappings().state.fromClass(C::class).type
         @Suppress("UNCHECKED_CAST")
         return getStateEvent(type, roomId) as Result<C>
@@ -135,7 +135,11 @@ class MatrixBot(private val matrixClient: MatrixClient, private val config: ICon
      * @param[listenNonUsers] whether you want to subscribe for events from non-users
      * @see [SyncApiClient.subscribe]
      */
-    fun <T : EventContent> subscribe(clazz: KClass<T>, subscriber: EventSubscriber<T>, listenNonUsers: Boolean = false) {
+    fun <T : EventContent> subscribe(
+        clazz: KClass<T>,
+        subscriber: EventSubscriber<T>,
+        listenNonUsers: Boolean = false
+    ) {
         matrixClient.api.sync.subscribe(clazz) { event -> if (isValidEventFromUser(event, listenNonUsers)) subscriber(event) }
     }
 
@@ -145,7 +149,10 @@ class MatrixBot(private val matrixClient: MatrixClient, private val config: ICon
      * @param[listenNonUsers] whether you want to subscribe for events from non-users
      * @see MatrixBot.subscribe
      */
-    inline fun <reified T : EventContent> subscribe(listenNonUsers: Boolean = false, noinline subscriber: EventSubscriber<T>) {
+    inline fun <reified T : EventContent> subscribe(
+        listenNonUsers: Boolean = false,
+        noinline subscriber: EventSubscriber<T>
+    ) {
         subscribe(T::class, subscriber, listenNonUsers)
     }
 
@@ -167,14 +174,20 @@ class MatrixBot(private val matrixClient: MatrixClient, private val config: ICon
      * @param[roomId] the room id of the room
      * @param[newNameInRoom] the bot's new name in the room
      */
-    suspend fun renameInRoom(roomId: RoomId, newNameInRoom: String) {
+    suspend fun renameInRoom(
+        roomId: RoomId,
+        newNameInRoom: String
+    ) {
         val members = matrixClient.api.rooms.getMembers(roomId).getOrNull() ?: return
         val myself = members.firstOrNull { it.stateKey == matrixClient.userId.full }?.content ?: return
         val newState = myself.copy(displayName = newNameInRoom)
         matrixClient.api.rooms.sendStateEvent(roomId, newState, stateKey = matrixClient.userId.full, asUserId = matrixClient.userId)
     }
 
-    private fun isValidEventFromUser(event: Event<*>, listenNonUsers: Boolean): Boolean {
+    private fun isValidEventFromUser(
+        event: Event<*>,
+        listenNonUsers: Boolean
+    ): Boolean {
         if (!config.isUser(event.senderOrNull) && !listenNonUsers) return false
         if (event.senderOrNull == matrixClient.userId) return false
         val timeOfOrigin = event.originTimestampOrNull
@@ -199,10 +212,12 @@ class MatrixBot(private val matrixClient: MatrixClient, private val config: ICon
     }
 
     private fun registerShutdownHook() {
-        Runtime.getRuntime().addShutdownHook(object : Thread() {
-            override fun run() {
-                runBlocking { if (running) quit() }
+        Runtime.getRuntime().addShutdownHook(
+            object : Thread() {
+                override fun run() {
+                    runBlocking { if (running) quit() }
+                }
             }
-        })
+        )
     }
 }

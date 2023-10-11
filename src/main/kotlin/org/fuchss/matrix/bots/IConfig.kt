@@ -3,7 +3,6 @@ package org.fuchss.matrix.bots
 import net.folivo.trixnity.core.model.UserId
 
 interface IConfig {
-
     /**
      * The command prefix the bot listens to. E.g., "bot"
      */

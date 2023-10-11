@@ -18,7 +18,12 @@ class ChangeUsernameCommand : Command() {
      * @param[roomId] The room to execute the command in.
      * @param[parameters] the new name of the bot.
      */
-    override suspend fun execute(matrixBot: MatrixBot, sender: UserId, roomId: RoomId, parameters: String) {
+    override suspend fun execute(
+        matrixBot: MatrixBot,
+        sender: UserId,
+        roomId: RoomId,
+        parameters: String
+    ) {
         if (!sender.isModerator(matrixBot, roomId)) {
             matrixBot.room().sendMessage(roomId) { text("You are not a moderator in this room.") }
             return

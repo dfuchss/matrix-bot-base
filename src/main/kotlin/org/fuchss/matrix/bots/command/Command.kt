@@ -7,7 +7,6 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 abstract class Command {
-
     protected val logger: Logger = LoggerFactory.getLogger(this::class.java)
 
     abstract val name: String
@@ -21,5 +20,10 @@ abstract class Command {
      * @param[roomId] The room to execute the command in.
      * @param[parameters] The parameters of the command.
      */
-    abstract suspend fun execute(matrixBot: MatrixBot, sender: UserId, roomId: RoomId, parameters: String)
+    abstract suspend fun execute(
+        matrixBot: MatrixBot,
+        sender: UserId,
+        roomId: RoomId,
+        parameters: String
+    )
 }
