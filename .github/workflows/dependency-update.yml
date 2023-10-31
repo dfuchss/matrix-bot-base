@@ -10,5 +10,7 @@ on:
 jobs:
   update:
     uses: dfuchss/actions/.github/workflows/maven-update.yml@main
+    with:
+      auto-digit: "Patch"
     secrets:
       PAT: ${{ secrets.PAT }}
