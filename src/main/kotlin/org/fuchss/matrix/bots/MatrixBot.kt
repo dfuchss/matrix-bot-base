@@ -8,13 +8,14 @@ import kotlinx.datetime.Instant
 import net.folivo.trixnity.client.MatrixClient
 import net.folivo.trixnity.client.room
 import net.folivo.trixnity.client.room.RoomService
-import net.folivo.trixnity.clientserverapi.client.RoomsApiClient
+import net.folivo.trixnity.clientserverapi.client.RoomApiClient
 import net.folivo.trixnity.clientserverapi.client.SyncApiClient
 import net.folivo.trixnity.clientserverapi.client.SyncState
-import net.folivo.trixnity.core.EventSubscriber
+import net.folivo.trixnity.core.ClientEventEmitter
+import net.folivo.trixnity.core.Subscriber
 import net.folivo.trixnity.core.model.EventId
 import net.folivo.trixnity.core.model.RoomId
-import net.folivo.trixnity.core.model.events.Event
+import net.folivo.trixnity.core.model.events.ClientEvent
 import net.folivo.trixnity.core.model.events.EventContent
 import net.folivo.trixnity.core.model.events.StateEventContent
 import net.folivo.trixnity.core.model.events.m.room.MemberEventContent
@@ -22,8 +23,8 @@ import net.folivo.trixnity.core.model.events.m.room.Membership
 import net.folivo.trixnity.core.model.events.originTimestampOrNull
 import net.folivo.trixnity.core.model.events.roomIdOrNull
 import net.folivo.trixnity.core.model.events.senderOrNull
-import net.folivo.trixnity.core.serialization.events.fromClass
-import net.folivo.trixnity.core.subscribe
+import net.folivo.trixnity.core.serialization.events.contentType
+import net.folivo.trixnity.core.subscribeContent
 import org.slf4j.LoggerFactory
 import kotlin.reflect.KClass
 
@@ -41,7 +42,7 @@ class MatrixBot(private val matrixClient: MatrixClient, private val config: ICon
     private var logout: Boolean = false
 
     init {
-        matrixClient.api.sync.subscribe { event -> handleJoinEvent(event) }
+        matrixClient.api.sync.subscribeContent { event -> handleJoinEvent(event) }
     }
 
     /**
@@ -79,9 +80,14 @@ class MatrixBot(private val matrixClient: MatrixClient, private val config: ICon
     fun room() = matrixClient.room
 
     /**
+     * Access to the [RoomApiClient] to create rooms and manage users.
+     */
+    fun roomApi() = matrixClient.api.room
+
+    /**
      * Get teh content mappings for [getStateEvent]
      */
-    fun contentMappings() = matrixClient.api.rooms.contentMappings
+    fun contentMappings() = matrixClient.api.room.contentMappings
 
     /**
      * Get the state event of a certain type
@@ -92,7 +98,7 @@ class MatrixBot(private val matrixClient: MatrixClient, private val config: ICon
     suspend fun getStateEvent(
         type: String,
         roomId: RoomId
-    ): Result<StateEventContent> = matrixClient.api.rooms.getStateEvent(type, roomId)
+    ): Result<StateEventContent> = matrixClient.api.room.getStateEvent(type, roomId)
 
     /**
      * Send a certain state event
@@ -102,7 +108,7 @@ class MatrixBot(private val matrixClient: MatrixClient, private val config: ICon
     suspend fun sendStateEvent(
         roomId: RoomId,
         eventContent: StateEventContent
-    ): Result<EventId> = matrixClient.api.rooms.sendStateEvent(roomId, eventContent)
+    ): Result<EventId> = matrixClient.api.room.sendStateEvent(roomId, eventContent)
 
     /**
      * Get a state event from a room
@@ -111,15 +117,10 @@ class MatrixBot(private val matrixClient: MatrixClient, private val config: ICon
      * @return the event
      */
     suspend inline fun <reified C : StateEventContent> getStateEvent(roomId: RoomId): Result<C> {
-        val type = contentMappings().state.fromClass(C::class).type
+        val type = contentMappings().state.contentType(C::class)
         @Suppress("UNCHECKED_CAST")
         return getStateEvent(type, roomId) as Result<C>
     }
-
-    /**
-     * Access to the [RoomsApiClient] to create rooms and manage users.
-     */
-    fun rooms() = matrixClient.api.rooms
 
     /**
      * Get the bot's user id
@@ -130,17 +131,25 @@ class MatrixBot(private val matrixClient: MatrixClient, private val config: ICon
     /**
      * Subscribe to a certain class of event. Note that you can only subscribe for events that are sent by a [users][IConfig.isUser] by default.
      *
-     * @param[clazz] the clas of event to subscribe
+     * @param[clazz] the class of event to subscribe
      * @param[subscriber] the function to invoke for the events
      * @param[listenNonUsers] whether you want to subscribe for events from non-users
      * @see [SyncApiClient.subscribe]
      */
-    fun <T : EventContent> subscribe(
+    fun <T : EventContent> subscribeContent(
         clazz: KClass<T>,
-        subscriber: EventSubscriber<T>,
+        subscriber: Subscriber<ClientEvent<T>>,
         listenNonUsers: Boolean = false
     ) {
-        matrixClient.api.sync.subscribe(clazz) { event -> if (isValidEventFromUser(event, listenNonUsers)) subscriber(event) }
+        matrixClient.api.sync.subscribeContent(clazz, ClientEventEmitter.Priority.DEFAULT) { event ->
+            if (isValidEventFromUser(
+                    event,
+                    listenNonUsers
+                )
+            ) {
+                subscriber(event)
+            }
+        }
     }
 
     /**
@@ -149,11 +158,11 @@ class MatrixBot(private val matrixClient: MatrixClient, private val config: ICon
      * @param[listenNonUsers] whether you want to subscribe for events from non-users
      * @see MatrixBot.subscribe
      */
-    inline fun <reified T : EventContent> subscribe(
+    inline fun <reified T : EventContent> subscribeContent(
         listenNonUsers: Boolean = false,
-        noinline subscriber: EventSubscriber<T>
+        noinline subscriber: Subscriber<ClientEvent<T>>
     ) {
-        subscribe(T::class, subscriber, listenNonUsers)
+        subscribeContent(T::class, subscriber, listenNonUsers)
     }
 
     /**
@@ -166,7 +175,7 @@ class MatrixBot(private val matrixClient: MatrixClient, private val config: ICon
     }
 
     suspend fun rename(newName: String) {
-        matrixClient.api.users.setDisplayName(matrixClient.userId, newName)
+        matrixClient.api.user.setDisplayName(matrixClient.userId, newName)
     }
 
     /**
@@ -178,14 +187,14 @@ class MatrixBot(private val matrixClient: MatrixClient, private val config: ICon
         roomId: RoomId,
         newNameInRoom: String
     ) {
-        val members = matrixClient.api.rooms.getMembers(roomId).getOrNull() ?: return
+        val members = matrixClient.api.room.getMembers(roomId).getOrNull() ?: return
         val myself = members.firstOrNull { it.stateKey == matrixClient.userId.full }?.content ?: return
         val newState = myself.copy(displayName = newNameInRoom)
-        matrixClient.api.rooms.sendStateEvent(roomId, newState, stateKey = matrixClient.userId.full, asUserId = matrixClient.userId)
+        matrixClient.api.room.sendStateEvent(roomId, newState, stateKey = matrixClient.userId.full, asUserId = matrixClient.userId)
     }
 
     private fun isValidEventFromUser(
-        event: Event<*>,
+        event: ClientEvent<*>,
         listenNonUsers: Boolean
     ): Boolean {
         if (!config.isUser(event.senderOrNull) && !listenNonUsers) return false
@@ -194,7 +203,7 @@ class MatrixBot(private val matrixClient: MatrixClient, private val config: ICon
         return !(timeOfOrigin == null || Instant.fromEpochMilliseconds(timeOfOrigin) < runningTimestamp)
     }
 
-    private suspend fun handleJoinEvent(event: Event<MemberEventContent>) {
+    private suspend fun handleJoinEvent(event: ClientEvent<MemberEventContent>) {
         val roomId = event.roomIdOrNull ?: return
 
         if (!config.isUser(event.senderOrNull) || event.senderOrNull == self()) return
@@ -208,7 +217,7 @@ class MatrixBot(private val matrixClient: MatrixClient, private val config: ICon
         if (room.membership != Membership.INVITE) return
 
         logger.info("Joining Room: $roomId by invitation of ${event.senderOrNull?.full ?: "Unknown User"}")
-        matrixClient.api.rooms.joinRoom(roomId)
+        matrixClient.api.room.joinRoom(roomId)
     }
 
     private fun registerShutdownHook() {

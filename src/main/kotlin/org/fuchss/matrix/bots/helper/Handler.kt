@@ -6,8 +6,8 @@ import net.folivo.trixnity.client.room
 import net.folivo.trixnity.client.store.repository.exposed.createExposedRepositoriesModule
 import net.folivo.trixnity.core.model.RoomId
 import net.folivo.trixnity.core.model.UserId
-import net.folivo.trixnity.core.model.events.Event
-import net.folivo.trixnity.core.model.events.eventIdOrNull
+import net.folivo.trixnity.core.model.events.ClientEvent
+import net.folivo.trixnity.core.model.events.idOrNull
 import net.folivo.trixnity.core.model.events.m.room.EncryptedEventContent
 import net.folivo.trixnity.core.model.events.m.room.RoomMessageEventContent.TextMessageEventContent
 import net.folivo.trixnity.core.model.events.roomIdOrNull
@@ -31,13 +31,13 @@ fun createMediaStore(config: IConfig) = OkioMediaStore(File(config.dataDirectory
 
 suspend fun handleEncryptedTextMessage(
     commands: List<Command>,
-    event: Event<EncryptedEventContent>,
+    event: ClientEvent<EncryptedEventContent>,
     matrixClient: MatrixClient,
     matrixBot: MatrixBot,
     config: IConfig
 ) {
     val roomId = event.roomIdOrNull ?: return
-    val eventId = event.eventIdOrNull ?: return
+    val eventId = event.idOrNull ?: return
 
     logger.debug("Waiting for decryption of {} ..", event)
     val decryptedEvent = matrixClient.room.getTimelineEvent(roomId, eventId).firstWithTimeout { it?.content != null }

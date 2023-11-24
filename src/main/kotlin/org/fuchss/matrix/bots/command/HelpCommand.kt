@@ -6,7 +6,7 @@ import org.fuchss.matrix.bots.IConfig
 import org.fuchss.matrix.bots.MatrixBot
 import org.fuchss.matrix.bots.markdown
 
-class HelpCommand(private val config: IConfig, private val commandGetter: () -> List<Command>) : Command() {
+class HelpCommand(private val config: IConfig, private val botName: String, private val commandGetter: () -> List<Command>) : Command() {
     override val name: String = "help"
     override val help: String = "shows this help message"
 
@@ -23,7 +23,7 @@ class HelpCommand(private val config: IConfig, private val commandGetter: () -> 
         roomId: RoomId,
         parameters: String
     ) {
-        var helpMessage = "This is the JoinLink Bot. You can use the following commands:\n"
+        var helpMessage = "This is $botName. You can use the following commands:\n"
 
         for (command in commandGetter()) {
             helpMessage += "\n* `!${config.prefix} ${command.name} ${command.params} - ${command.help}`"

@@ -81,7 +81,7 @@ suspend fun String.toInternalRoomIdOrNull(matrixBot: MatrixBot): RoomId? {
 suspend fun MatrixBot.resolvePublicRoomIdOrNull(publicRoomAlias: String): RoomId? {
     val roomAlias = RoomAliasId(publicRoomAlias)
 
-    val allKnownRooms = rooms().getJoinedRooms().getOrThrow()
+    val allKnownRooms = roomApi().getJoinedRooms().getOrThrow()
     for (room in allKnownRooms) {
         val aliasState = getStateEvent<CanonicalAliasEventContent>(room).getOrNull() ?: continue
         if (aliasState.alias == roomAlias) {

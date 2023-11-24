@@ -6,8 +6,8 @@ import net.folivo.trixnity.core.model.events.EventType
 import net.folivo.trixnity.core.model.events.m.room.PowerLevelsEventContent
 import org.fuchss.matrix.bots.MatrixBot
 
-const val ADMIN_POWER_LEVEL = 100
-const val MOD_POWER_LEVEL = 50
+const val ADMIN_POWER_LEVEL = 100L
+const val MOD_POWER_LEVEL = 50L
 
 /**
  * Get the current permission level of the bot in a room
@@ -18,7 +18,7 @@ const val MOD_POWER_LEVEL = 50
 suspend fun MatrixBot.powerLevel(
     roomId: RoomId,
     userId: UserId? = null
-): Int {
+): Long {
     val levels = getStateEvent<PowerLevelsEventContent>(roomId).getOrThrow()
     return levels.users[userId ?: this.self()] ?: levels.usersDefault
 }

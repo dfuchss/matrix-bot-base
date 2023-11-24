@@ -23,13 +23,13 @@ private lateinit var commands: List<Command>
 fun main() {
     runBlocking {
         val config: IConfig = // Load config here 
-            commands = listOf(HelpCommand(config) { commands }, QuitCommand(config), LogoutCommand(config), ChangeUsernameCommand(), /* Custom commands here */)
+            commands = listOf(HelpCommand(config, "FancyBot") { commands }, QuitCommand(config), LogoutCommand(config), ChangeUsernameCommand(), /* Custom commands here */)
 
         val matrixClient = getMatrixClient(config)
 
         val matrixBot = MatrixBot(matrixClient, config)
-        matrixBot.subscribe { event -> handleTextMessage(commands, event.roomIdOrNull, event.senderOrNull, event.content, matrixBot, config) }
-        matrixBot.subscribe { event -> handleEncryptedTextMessage(commands, event, matrixClient, matrixBot, config) }
+        matrixBot.subscribeContent { event -> handleTextMessage(commands, event.roomIdOrNull, event.senderOrNull, event.content, matrixBot, config) }
+        matrixBot.subscribeContent { event -> handleEncryptedTextMessage(commands, event, matrixClient, matrixBot, config) }
 
         val loggedOut = matrixBot.startBlocking()
 
