@@ -8,7 +8,7 @@ import net.folivo.trixnity.core.model.RoomId
 import net.folivo.trixnity.core.model.UserId
 import net.folivo.trixnity.core.model.events.ClientEvent
 import net.folivo.trixnity.core.model.events.idOrNull
-import net.folivo.trixnity.core.model.events.m.room.EncryptedEventContent
+import net.folivo.trixnity.core.model.events.m.room.EncryptedMessageEventContent
 import net.folivo.trixnity.core.model.events.m.room.RoomMessageEventContent.TextMessageEventContent
 import net.folivo.trixnity.core.model.events.roomIdOrNull
 import net.folivo.trixnity.core.model.events.senderOrNull
@@ -31,7 +31,7 @@ fun createMediaStore(config: IConfig) = OkioMediaStore(File(config.dataDirectory
 
 suspend fun handleEncryptedTextMessage(
     commands: List<Command>,
-    event: ClientEvent<EncryptedEventContent>,
+    event: ClientEvent<EncryptedMessageEventContent>,
     matrixClient: MatrixClient,
     matrixBot: MatrixBot,
     config: IConfig

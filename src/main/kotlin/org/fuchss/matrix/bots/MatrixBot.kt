@@ -156,7 +156,7 @@ class MatrixBot(private val matrixClient: MatrixClient, private val config: ICon
      * Subscribe to a certain class of event. Note that you can only subscribe for events that are sent by an admin by default.
      * @param[subscriber] the function to invoke for the events
      * @param[listenNonUsers] whether you want to subscribe for events from non-users
-     * @see MatrixBot.subscribe
+     * @see MatrixBot.subscribeContent
      */
     inline fun <reified T : EventContent> subscribeContent(
         listenNonUsers: Boolean = false,
