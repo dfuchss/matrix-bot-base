@@ -9,7 +9,7 @@
     </parent>
 
     <artifactId>matrix-bot-base</artifactId>
-    <version>0.8.5-SNAPSHOT</version>
+    <version>0.9.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>Matrix Bot Base</name>
     <description>Base project for matrix bots</description>
@@ -45,7 +45,7 @@
     </distributionManagement>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <trixnity.version>4.1.1</trixnity.version>
+        <trixnity.version>4.2.0</trixnity.version>
         <serialization.version>1.6.2</serialization.version>
 
         <sonar.organization>dfuchss</sonar.organization>

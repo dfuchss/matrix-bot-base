@@ -9,7 +9,7 @@ import net.folivo.trixnity.core.model.UserId
 import net.folivo.trixnity.core.model.events.ClientEvent
 import net.folivo.trixnity.core.model.events.idOrNull
 import net.folivo.trixnity.core.model.events.m.room.EncryptedMessageEventContent
-import net.folivo.trixnity.core.model.events.m.room.RoomMessageEventContent.TextMessageEventContent
+import net.folivo.trixnity.core.model.events.m.room.RoomMessageEventContent.TextBased.Text
 import net.folivo.trixnity.core.model.events.roomIdOrNull
 import net.folivo.trixnity.core.model.events.senderOrNull
 import okio.Path.Companion.toOkioPath
@@ -51,7 +51,7 @@ suspend fun handleEncryptedTextMessage(
     }
 
     val content = decryptedEvent.content?.getOrNull() ?: return
-    if (content is TextMessageEventContent) {
+    if (content is Text) {
         handleTextMessage(commands, roomId, event.senderOrNull, content, matrixBot, config)
     }
 }
@@ -60,7 +60,7 @@ suspend fun handleTextMessage(
     commands: List<Command>,
     roomId: RoomId?,
     sender: UserId?,
-    content: TextMessageEventContent,
+    content: Text,
     matrixBot: MatrixBot,
     config: IConfig
 ) {
