@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.fuchss</groupId>
         <artifactId>maven-parent</artifactId>
-        <version>0.21.8</version>
+        <version>0.21.10</version>
     </parent>
 
     <artifactId>matrix-bot-base</artifactId>
@@ -45,7 +45,7 @@
     </distributionManagement>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <trixnity.version>4.2.0</trixnity.version>
+        <trixnity.version>4.2.2</trixnity.version>
         <serialization.version>1.6.2</serialization.version>
 
         <sonar.organization>dfuchss</sonar.organization>
