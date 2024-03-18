@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.fuchss</groupId>
         <artifactId>maven-parent</artifactId>
-        <version>0.21.13</version>
+        <version>0.21.14</version>
     </parent>
 
     <artifactId>matrix-bot-base</artifactId>
@@ -104,7 +104,7 @@
         <dependency>
             <groupId>org.commonmark</groupId>
             <artifactId>commonmark</artifactId>
-            <version>0.21.0</version>
+            <version>0.22.0</version>
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
