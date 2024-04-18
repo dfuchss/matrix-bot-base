@@ -50,8 +50,6 @@ class MatrixBot(private val matrixClient: MatrixClient, private val config: ICon
      * @return true if the bot was logged out, false if the bot simply quit.
      */
     suspend fun startBlocking(): Boolean {
-        check(running) { "Bot is already running!" }
-
         running = true
         registerShutdownHook()
 
