@@ -9,15 +9,15 @@
     </parent>
 
     <artifactId>matrix-bot-base</artifactId>
-    <version>0.9.13-SNAPSHOT</version>
+    <version>0.10.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>Matrix Bot Base</name>
     <description>Base project for matrix bots</description>
     <url>https://github.com/dfuchss/matrix-bot-base</url>
     <licenses>
         <license>
-            <name>GPL-3.0</name>
-            <url>https://www.gnu.org/licenses/gpl-3.0.en.html</url>
+            <name>MIT License</name>
+            <url>https://www.opensource.org/licenses/mit-license.php</url>
         </license>
     </licenses>
 
