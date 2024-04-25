@@ -45,7 +45,7 @@
     </distributionManagement>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <trixnity.version>4.3.2</trixnity.version>
+        <trixnity.version>4.3.3</trixnity.version>
         <serialization.version>1.6.3</serialization.version>
 
         <sonar.organization>dfuchss</sonar.organization>
