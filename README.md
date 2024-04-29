@@ -2,6 +2,8 @@
 
 This repository contains an abstraction layer to build bots using [Trixnity](https://trixnity.gitlab.io/trixnity/).
 
+I'm typically online in the [Trixnity channel](https://matrix.to/#/#trixnity:imbitbu.de). So feel free to tag me there if you have any questions.
+
 ## Usage
 
 To use this library, you need to add it as a dependency to your project. You can do this by adding the following to your `pom.xml`:
