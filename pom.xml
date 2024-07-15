@@ -9,7 +9,7 @@
     </parent>
 
     <artifactId>matrix-bot-base</artifactId>
-    <version>0.10.12</version>
+    <version>0.10.13-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>Matrix Bot Base</name>
     <description>Base project for matrix bots</description>
