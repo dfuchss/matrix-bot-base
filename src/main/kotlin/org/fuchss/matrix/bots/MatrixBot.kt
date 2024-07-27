@@ -16,9 +16,11 @@ import net.folivo.trixnity.core.ClientEventEmitter
 import net.folivo.trixnity.core.Subscriber
 import net.folivo.trixnity.core.model.EventId
 import net.folivo.trixnity.core.model.RoomId
+import net.folivo.trixnity.core.model.UserId
 import net.folivo.trixnity.core.model.events.ClientEvent
 import net.folivo.trixnity.core.model.events.EventContent
 import net.folivo.trixnity.core.model.events.StateEventContent
+import net.folivo.trixnity.core.model.events.idOrNull
 import net.folivo.trixnity.core.model.events.m.room.MemberEventContent
 import net.folivo.trixnity.core.model.events.m.room.Membership
 import net.folivo.trixnity.core.model.events.originTimestampOrNull
@@ -187,6 +189,27 @@ class MatrixBot(private val matrixClient: MatrixClient, private val config: ICon
         noinline subscriber: Subscriber<ClientEvent<T>>
     ) {
         subscribeContent(T::class, subscriber, listenNonUsers, listenBotEvents)
+    }
+
+    /**
+     * Subscribe to a certain class of event. Note that you can only subscribe for events that are sent by an admin by default.
+     * @param[subscriber] the function to invoke for the events
+     * @param[listenNonUsers] whether you want to subscribe for events from non-users
+     * @param[listenBotEvents] whether you want to subscribe for events from the bot itself
+     */
+    inline fun <reified T : EventContent> subscribeContent(
+        listenNonUsers: Boolean = false,
+        listenBotEvents: Boolean = false,
+        noinline subscriber: suspend (EventId, UserId, RoomId, T) -> Unit
+    ) {
+        subscribeContent(T::class, { event ->
+            val eventId = event.idOrNull
+            val sender = event.senderOrNull
+            val roomId = event.roomIdOrNull
+            if (eventId != null && sender != null && roomId != null) {
+                subscriber(eventId, sender, roomId, event.content)
+            }
+        }, listenNonUsers, listenBotEvents)
     }
 
     /**
