@@ -1,5 +1,7 @@
 package org.fuchss.matrix.bots
 
+import com.vdurmont.emoji.Emoji
+import com.vdurmont.emoji.EmojiManager
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withTimeoutOrNull
@@ -28,6 +30,11 @@ suspend fun <T> Flow<T>.firstWithTimeout(
     val that = this
     return withTimeoutOrNull(timeout) { that.first { predicate(it) } }
 }
+
+/**
+ * Convert a string emoji to an [Emoji].
+ */
+fun String.emoji(): String = EmojiManager.getForAlias(this).unicode
 
 /**
  * Format a markdown message and send it using a [MessageBuilder]

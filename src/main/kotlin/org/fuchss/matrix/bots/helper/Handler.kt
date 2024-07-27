@@ -1,6 +1,7 @@
 package org.fuchss.matrix.bots.helper
 
 import net.folivo.trixnity.client.media.okio.OkioMediaStore
+import net.folivo.trixnity.client.room.message.react
 import net.folivo.trixnity.client.store.repository.exposed.createExposedRepositoriesModule
 import net.folivo.trixnity.core.model.EventId
 import net.folivo.trixnity.core.model.RoomId
@@ -107,5 +108,14 @@ private suspend fun executeCommand(
         commandToExecute = commands.find { it.name == defaultCommand }
         parameters = message
     }
-    commandToExecute?.execute(matrixBot, sender, roomId, parameters, textEventId, textEvent)
+
+    if (commandToExecute == null) {
+        return
+    }
+
+    matrixBot.room().sendMessage(roomId) {
+        react(textEventId, Command.ACK_EMOJI)
+    }
+
+    commandToExecute.execute(matrixBot, sender, roomId, parameters, textEventId, textEvent)
 }

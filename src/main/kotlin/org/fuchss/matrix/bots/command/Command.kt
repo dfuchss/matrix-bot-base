@@ -5,6 +5,7 @@ import net.folivo.trixnity.core.model.RoomId
 import net.folivo.trixnity.core.model.UserId
 import net.folivo.trixnity.core.model.events.m.room.RoomMessageEventContent
 import org.fuchss.matrix.bots.MatrixBot
+import org.fuchss.matrix.bots.emoji
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -14,6 +15,11 @@ abstract class Command {
     abstract val name: String
     open val params: String = ""
     abstract val help: String
+
+    companion object {
+        @JvmStatic
+        val ACK_EMOJI = ":heavy_check_mark:".emoji()
+    }
 
     /**
      * Execute the command.
