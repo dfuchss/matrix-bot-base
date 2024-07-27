@@ -7,6 +7,7 @@ import net.folivo.trixnity.client.room.message.MessageBuilder
 import net.folivo.trixnity.client.room.message.text
 import net.folivo.trixnity.core.model.RoomAliasId
 import net.folivo.trixnity.core.model.RoomId
+import net.folivo.trixnity.core.model.UserId
 import net.folivo.trixnity.core.model.events.m.room.CanonicalAliasEventContent
 import org.commonmark.parser.Parser
 import org.commonmark.renderer.html.HtmlRenderer
@@ -39,10 +40,16 @@ fun MessageBuilder.markdown(markdown: String) {
 }
 
 /**
- * Create a matrix.to link from a RoomId
+ * Create a matrix.to link for a RoomId
  * @return the matrix.to link
  */
 fun RoomId.matrixTo(): String = "$MATRIX_TO_PREFIX${this.full}?via=${this.domain}"
+
+/**
+ * Create a matrix.to link for a UserId
+ * @return the matrix.to link
+ */
+fun UserId.matrixTo(): String = "${MATRIX_TO_PREFIX}${this.full}"
 
 /**
  * Indicates if a string is a valid RoomId (syntax)

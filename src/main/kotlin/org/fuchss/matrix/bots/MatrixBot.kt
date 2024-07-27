@@ -8,6 +8,7 @@ import kotlinx.datetime.Instant
 import net.folivo.trixnity.client.MatrixClient
 import net.folivo.trixnity.client.room
 import net.folivo.trixnity.client.room.RoomService
+import net.folivo.trixnity.client.store.TimelineEvent
 import net.folivo.trixnity.clientserverapi.client.RoomApiClient
 import net.folivo.trixnity.clientserverapi.client.SyncApiClient
 import net.folivo.trixnity.clientserverapi.client.SyncState
@@ -120,6 +121,24 @@ class MatrixBot(private val matrixClient: MatrixClient, private val config: ICon
         val type = contentMappings().state.contentType(C::class)
         @Suppress("UNCHECKED_CAST")
         return getStateEvent(type, roomId) as Result<C>
+    }
+
+    /**
+     * Get a timeline event from a room and event id.
+     * @param[roomId] the room id
+     * @param[eventId] the event id
+     * @return the timeline event or null if not found.
+     */
+    suspend fun getTimelineEvent(
+        roomId: RoomId,
+        eventId: EventId
+    ): TimelineEvent? {
+        val timelineEvent = room().getTimelineEvent(roomId, eventId).firstWithTimeout { it?.content != null }
+        if (timelineEvent == null) {
+            logger.error("Cannot get timeline event for $eventId within the given time ..")
+            return null
+        }
+        return timelineEvent
     }
 
     /**

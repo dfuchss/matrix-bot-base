@@ -1,7 +1,6 @@
 package org.fuchss.matrix.bots.helper
 
 import net.folivo.trixnity.client.media.okio.OkioMediaStore
-import net.folivo.trixnity.client.room
 import net.folivo.trixnity.client.store.repository.exposed.createExposedRepositoriesModule
 import net.folivo.trixnity.core.model.EventId
 import net.folivo.trixnity.core.model.RoomId
@@ -30,7 +29,7 @@ suspend fun createRepositoriesModule(config: IConfig) =
 
 fun createMediaStore(config: IConfig) = OkioMediaStore(File(config.dataDirectory + "/media").toOkioPath())
 
-suspend fun handleEncryptedTextMessage(
+suspend fun decryptMessage(
     event: ClientEvent<EncryptedMessageEventContent>,
     matrixBot: MatrixBot,
     handler: suspend (EventId, UserId, RoomId, Text) -> Unit
@@ -56,19 +55,19 @@ suspend fun handleEncryptedTextMessage(
     }
 }
 
-suspend fun handleEncryptedTextMessageToCommand(
+suspend fun handleEncryptedCommand(
     commands: List<Command>,
     event: ClientEvent<EncryptedMessageEventContent>,
     matrixBot: MatrixBot,
     config: IConfig,
     defaultCommand: String? = null
 ) {
-    handleEncryptedTextMessage(event, matrixBot) { eventId, sender, roomId, text ->
-        handleCommand(commands, sender, matrixBot, roomId, eventId, text, config, defaultCommand)
+    decryptMessage(event, matrixBot) { eventId, sender, roomId, text ->
+        executeCommand(commands, sender, matrixBot, roomId, eventId, text, config, defaultCommand)
     }
 }
 
-suspend fun handleTextMessageToCommand(
+suspend fun handleCommand(
     commands: List<Command>,
     event: ClientEvent<RoomMessageEventContent>,
     matrixBot: MatrixBot,
@@ -80,11 +79,11 @@ suspend fun handleTextMessageToCommand(
     val eventId = event.idOrNull ?: return
     val content = event.content
     if (content is Text) {
-        handleCommand(commands, sender, matrixBot, roomId, eventId, content, config, defaultCommand)
+        executeCommand(commands, sender, matrixBot, roomId, eventId, content, config, defaultCommand)
     }
 }
 
-private suspend fun handleCommand(
+private suspend fun executeCommand(
     commands: List<Command>,
     sender: UserId,
     matrixBot: MatrixBot,

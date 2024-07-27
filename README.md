@@ -30,8 +30,8 @@ fun main() {
         val matrixClient = getMatrixClient(config)
 
         val matrixBot = MatrixBot(matrixClient, config)
-        matrixBot.subscribeContent { event -> handleTextMessageToCommand(commands, event, matrixBot, config) }
-        matrixBot.subscribeContent { encryptedEvent -> handleEncryptedTextMessageToCommand(commands, encryptedEvent, matrixBot, config) }
+        matrixBot.subscribeContent { event -> handleCommand(commands, event, matrixBot, config) }
+        matrixBot.subscribeContent { encryptedEvent -> handleEncryptedCommand(commands, encryptedEvent, matrixBot, config) }
 
         val loggedOut = matrixBot.startBlocking()
 
