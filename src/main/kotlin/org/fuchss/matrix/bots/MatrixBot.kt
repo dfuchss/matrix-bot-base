@@ -265,7 +265,7 @@ class MatrixBot(private val matrixClient: MatrixClient, private val config: ICon
         if (room.membership != Membership.INVITE) return
 
         logger.info("Joining Room: $roomId by invitation of ${event.senderOrNull?.full ?: "Unknown User"}")
-        matrixClient.api.room.joinRoom(roomId)
+        matrixClient.api.room.joinRoom(roomId).onFailure { logger.error("Could not join room $roomId: ${it.message}", it) }
     }
 
     private fun registerShutdownHook() {
