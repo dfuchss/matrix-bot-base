@@ -134,17 +134,20 @@ class MatrixBot(private val matrixClient: MatrixClient, private val config: ICon
      * @param[clazz] the class of event to subscribe
      * @param[subscriber] the function to invoke for the events
      * @param[listenNonUsers] whether you want to subscribe for events from non-users
+     * @param[listenBotEvents] whether you want to subscribe for events from the bot itself
      * @see [SyncApiClient.subscribe]
      */
     fun <T : EventContent> subscribeContent(
         clazz: KClass<T>,
         subscriber: Subscriber<ClientEvent<T>>,
-        listenNonUsers: Boolean = false
+        listenNonUsers: Boolean = false,
+        listenBotEvents: Boolean = false
     ) {
         matrixClient.api.sync.subscribeContent(clazz, ClientEventEmitter.Priority.DEFAULT) { event ->
             if (isValidEventFromUser(
                     event,
-                    listenNonUsers
+                    listenNonUsers,
+                    listenBotEvents
                 )
             ) {
                 subscriber(event)
@@ -156,13 +159,15 @@ class MatrixBot(private val matrixClient: MatrixClient, private val config: ICon
      * Subscribe to a certain class of event. Note that you can only subscribe for events that are sent by an admin by default.
      * @param[subscriber] the function to invoke for the events
      * @param[listenNonUsers] whether you want to subscribe for events from non-users
+     * @param[listenBotEvents] whether you want to subscribe for events from the bot itself
      * @see MatrixBot.subscribeContent
      */
     inline fun <reified T : EventContent> subscribeContent(
         listenNonUsers: Boolean = false,
+        listenBotEvents: Boolean = false,
         noinline subscriber: Subscriber<ClientEvent<T>>
     ) {
-        subscribeContent(T::class, subscriber, listenNonUsers)
+        subscribeContent(T::class, subscriber, listenNonUsers, listenBotEvents)
     }
 
     /**
@@ -195,10 +200,11 @@ class MatrixBot(private val matrixClient: MatrixClient, private val config: ICon
 
     private fun isValidEventFromUser(
         event: ClientEvent<*>,
-        listenNonUsers: Boolean
+        listenNonUsers: Boolean,
+        listenBotEvents: Boolean
     ): Boolean {
         if (!config.isUser(event.senderOrNull) && !listenNonUsers) return false
-        if (event.senderOrNull == matrixClient.userId) return false
+        if (event.senderOrNull == matrixClient.userId && !listenBotEvents) return false
         val timeOfOrigin = event.originTimestampOrNull
         return !(timeOfOrigin == null || Instant.fromEpochMilliseconds(timeOfOrigin) < runningTimestamp)
     }

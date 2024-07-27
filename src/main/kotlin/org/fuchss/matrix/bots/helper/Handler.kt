@@ -1,14 +1,15 @@
 package org.fuchss.matrix.bots.helper
 
-import net.folivo.trixnity.client.MatrixClient
 import net.folivo.trixnity.client.media.okio.OkioMediaStore
 import net.folivo.trixnity.client.room
 import net.folivo.trixnity.client.store.repository.exposed.createExposedRepositoriesModule
+import net.folivo.trixnity.core.model.EventId
 import net.folivo.trixnity.core.model.RoomId
 import net.folivo.trixnity.core.model.UserId
 import net.folivo.trixnity.core.model.events.ClientEvent
 import net.folivo.trixnity.core.model.events.idOrNull
 import net.folivo.trixnity.core.model.events.m.room.EncryptedMessageEventContent
+import net.folivo.trixnity.core.model.events.m.room.RoomMessageEventContent
 import net.folivo.trixnity.core.model.events.m.room.RoomMessageEventContent.TextBased.Text
 import net.folivo.trixnity.core.model.events.roomIdOrNull
 import net.folivo.trixnity.core.model.events.senderOrNull
@@ -30,17 +31,16 @@ suspend fun createRepositoriesModule(config: IConfig) =
 fun createMediaStore(config: IConfig) = OkioMediaStore(File(config.dataDirectory + "/media").toOkioPath())
 
 suspend fun handleEncryptedTextMessage(
-    commands: List<Command>,
     event: ClientEvent<EncryptedMessageEventContent>,
-    matrixClient: MatrixClient,
     matrixBot: MatrixBot,
-    config: IConfig
+    handler: suspend (EventId, UserId, RoomId, Text) -> Unit
 ) {
-    val roomId = event.roomIdOrNull ?: return
     val eventId = event.idOrNull ?: return
+    val roomId = event.roomIdOrNull ?: return
+    val sender = event.senderOrNull ?: return
 
     logger.debug("Waiting for decryption of {} ..", event)
-    val decryptedEvent = matrixClient.room.getTimelineEvent(roomId, eventId).firstWithTimeout { it?.content != null }
+    val decryptedEvent = matrixBot.room().getTimelineEvent(roomId, eventId).firstWithTimeout { it?.content != null }
     if (decryptedEvent != null) {
         logger.debug("Decryption of {} was successful", event)
     }
@@ -52,31 +52,61 @@ suspend fun handleEncryptedTextMessage(
 
     val content = decryptedEvent.content?.getOrNull() ?: return
     if (content is Text) {
-        handleTextMessage(commands, roomId, event.senderOrNull, content, matrixBot, config)
+        handler(eventId, sender, roomId, content)
     }
 }
 
-suspend fun handleTextMessage(
+suspend fun handleEncryptedTextMessageToCommand(
     commands: List<Command>,
-    roomId: RoomId?,
-    sender: UserId?,
-    content: Text,
+    event: ClientEvent<EncryptedMessageEventContent>,
     matrixBot: MatrixBot,
-    config: IConfig
+    config: IConfig,
+    defaultCommand: String? = null
 ) {
-    if (roomId == null || sender == null) {
-        return
+    handleEncryptedTextMessage(event, matrixBot) { eventId, sender, roomId, text ->
+        handleCommand(commands, sender, matrixBot, roomId, eventId, text, config, defaultCommand)
     }
+}
 
-    var message = content.body
+suspend fun handleTextMessageToCommand(
+    commands: List<Command>,
+    event: ClientEvent<RoomMessageEventContent>,
+    matrixBot: MatrixBot,
+    config: IConfig,
+    defaultCommand: String? = null
+) {
+    val roomId = event.roomIdOrNull ?: return
+    val sender = event.senderOrNull ?: return
+    val eventId = event.idOrNull ?: return
+    val content = event.content
+    if (content is Text) {
+        handleCommand(commands, sender, matrixBot, roomId, eventId, content, config, defaultCommand)
+    }
+}
+
+private suspend fun handleCommand(
+    commands: List<Command>,
+    sender: UserId,
+    matrixBot: MatrixBot,
+    roomId: RoomId,
+    textEventId: EventId,
+    textEvent: Text,
+    config: IConfig,
+    defaultCommand: String?
+) {
+    var message = textEvent.body
     if (!message.startsWith("!${config.prefix}")) {
         return
     }
-
     message = message.substring("!${config.prefix}".length).trim()
 
     val command = message.split(Regex(" "), 2)[0]
-    val parameters = message.substring(command.length).trim()
+    var parameters = message.substring(command.length).trim()
 
-    commands.find { it.name == command }?.execute(matrixBot, sender, roomId, parameters)
+    var commandToExecute = commands.find { it.name == command }
+    if (commandToExecute == null && defaultCommand != null) {
+        commandToExecute = commands.find { it.name == defaultCommand }
+        parameters = message
+    }
+    commandToExecute?.execute(matrixBot, sender, roomId, parameters, textEventId, textEvent)
 }

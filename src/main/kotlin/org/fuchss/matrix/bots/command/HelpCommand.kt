@@ -1,7 +1,9 @@
 package org.fuchss.matrix.bots.command
 
+import net.folivo.trixnity.core.model.EventId
 import net.folivo.trixnity.core.model.RoomId
 import net.folivo.trixnity.core.model.UserId
+import net.folivo.trixnity.core.model.events.m.room.RoomMessageEventContent
 import org.fuchss.matrix.bots.IConfig
 import org.fuchss.matrix.bots.MatrixBot
 import org.fuchss.matrix.bots.markdown
@@ -16,12 +18,16 @@ class HelpCommand(private val config: IConfig, private val botName: String, priv
      * @param[sender] The sender of the command.
      * @param[roomId] The room to show the help message in.
      * @param[parameters] The parameters of the command.
+     * @param[textEventId] The event of the command.
+     * @param[textEvent] The event of the command.
      */
     override suspend fun execute(
         matrixBot: MatrixBot,
         sender: UserId,
         roomId: RoomId,
-        parameters: String
+        parameters: String,
+        textEventId: EventId,
+        textEvent: RoomMessageEventContent.TextBased.Text
     ) {
         var helpMessage = "This is $botName. You can use the following commands:\n"
 
