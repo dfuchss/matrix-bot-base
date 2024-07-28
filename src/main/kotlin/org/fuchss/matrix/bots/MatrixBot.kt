@@ -26,6 +26,7 @@ import net.folivo.trixnity.core.model.events.m.room.Membership
 import net.folivo.trixnity.core.model.events.originTimestampOrNull
 import net.folivo.trixnity.core.model.events.roomIdOrNull
 import net.folivo.trixnity.core.model.events.senderOrNull
+import net.folivo.trixnity.core.model.events.stateKeyOrNull
 import net.folivo.trixnity.core.serialization.events.contentType
 import net.folivo.trixnity.core.subscribeContent
 import org.slf4j.LoggerFactory
@@ -253,14 +254,17 @@ class MatrixBot(private val matrixClient: MatrixClient, private val config: ICon
 
     private suspend fun handleJoinEvent(event: ClientEvent<MemberEventContent>) {
         val roomId = event.roomIdOrNull ?: return
+        val stateKey = event.stateKeyOrNull ?: return
+
+        if (stateKey != self().full) return
 
         if (!config.isUser(event.senderOrNull) || event.senderOrNull == self()) return
 
-        if (event.content.membership != Membership.JOIN) {
-            logger.debug("Got Membership Event: {}", event)
+        if (event.content.membership != Membership.INVITE) {
             return
         }
 
+        // Check if already joined ..
         val room = matrixClient.room.getById(roomId).firstWithTimeout { it != null } ?: return
         if (room.membership != Membership.INVITE) return
 
