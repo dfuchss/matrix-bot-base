@@ -15,6 +15,7 @@ abstract class Command {
     abstract val name: String
     open val params: String = ""
     abstract val help: String
+    open val autoAcknowledge: Boolean = true
 
     companion object {
         @JvmStatic

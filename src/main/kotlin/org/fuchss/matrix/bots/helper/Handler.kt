@@ -113,8 +113,10 @@ private suspend fun executeCommand(
         return
     }
 
-    matrixBot.room().sendMessage(roomId) {
-        react(textEventId, Command.ACK_EMOJI)
+    if (commandToExecute.autoAcknowledge) {
+        matrixBot.room().sendMessage(roomId) {
+            react(textEventId, Command.ACK_EMOJI)
+        }
     }
 
     commandToExecute.execute(matrixBot, sender, roomId, parameters, textEventId, textEvent)
