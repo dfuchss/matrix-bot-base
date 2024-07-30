@@ -11,6 +11,7 @@ import org.fuchss.matrix.bots.MatrixBot
 class LogoutCommand(private val config: IConfig) : Command() {
     override val name: String = "logout"
     override val help: String = "quits the bot and logs out all sessions"
+    override val autoAcknowledge = true
 
     /**
      * Quit the bot and logout all sessions.
