@@ -8,7 +8,11 @@ import org.fuchss.matrix.bots.IConfig
 import org.fuchss.matrix.bots.MatrixBot
 import org.fuchss.matrix.bots.markdown
 
-class HelpCommand(private val config: IConfig, private val botName: String, private val commandGetter: () -> List<Command>) : Command() {
+class HelpCommand(
+    private val config: IConfig,
+    private val botName: String,
+    private val commandGetter: () -> List<Command>
+) : Command() {
     override val name: String = "help"
     override val help: String = "shows this help message"
 

@@ -35,7 +35,10 @@ import kotlin.reflect.KClass
 /**
  * This class provides encapsulates a [MatrixClient] and its [IConfig] to provide a high level bot interface.
  */
-class MatrixBot(private val matrixClient: MatrixClient, private val config: IConfig) {
+class MatrixBot(
+    private val matrixClient: MatrixClient,
+    private val config: IConfig
+) {
     private val logger = LoggerFactory.getLogger(MatrixBot::class.java)
 
     private val runningTimestamp = Clock.System.now()
@@ -235,7 +238,10 @@ class MatrixBot(private val matrixClient: MatrixClient, private val config: ICon
         roomId: RoomId,
         newNameInRoom: String
     ) {
-        val members = matrixClient.api.room.getMembers(roomId).getOrNull() ?: return
+        val members =
+            matrixClient.api.room
+                .getMembers(roomId)
+                .getOrNull() ?: return
         val myself = members.firstOrNull { it.stateKey == matrixClient.userId.full }?.content ?: return
         val newState = myself.copy(displayName = newNameInRoom)
         matrixClient.api.room.sendStateEvent(roomId, newState, stateKey = matrixClient.userId.full, asUserId = matrixClient.userId)
@@ -269,7 +275,9 @@ class MatrixBot(private val matrixClient: MatrixClient, private val config: ICon
         if (room.membership != Membership.INVITE) return
 
         logger.info("Joining Room: $roomId by invitation of ${event.senderOrNull?.full ?: "Unknown User"}")
-        matrixClient.api.room.joinRoom(roomId).onFailure { logger.error("Could not join room $roomId: ${it.message}", it) }
+        matrixClient.api.room
+            .joinRoom(roomId)
+            .onFailure { logger.error("Could not join room $roomId: ${it.message}", it) }
     }
 
     private fun registerShutdownHook() {

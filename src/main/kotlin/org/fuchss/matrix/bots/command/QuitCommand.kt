@@ -8,7 +8,9 @@ import net.folivo.trixnity.core.model.events.m.room.RoomMessageEventContent
 import org.fuchss.matrix.bots.IConfig
 import org.fuchss.matrix.bots.MatrixBot
 
-class QuitCommand(private val config: IConfig) : Command() {
+class QuitCommand(
+    private val config: IConfig
+) : Command() {
     override val name: String = "quit"
     override val help: String = "quits the bot without logging out"
     override val autoAcknowledge = true
