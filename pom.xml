@@ -47,6 +47,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <trixnity.version>4.7.3</trixnity.version>
         <serialization.version>1.7.3</serialization.version>
+        <ktor.version>2.3.12</ktor.version>
 
         <sonar.organization>dfuchss</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
@@ -93,14 +94,17 @@
         <dependency>
             <groupId>io.ktor</groupId>
             <artifactId>ktor-client-content-negotiation-jvm</artifactId>
+            <version>${ktor.version}</version>
         </dependency>
         <dependency>
             <groupId>io.ktor</groupId>
             <artifactId>ktor-client-java-jvm</artifactId>
+            <version>${ktor.version}</version>
         </dependency>
         <dependency>
             <groupId>io.ktor</groupId>
             <artifactId>ktor-serialization-jackson-jvm</artifactId>
+            <version>${ktor.version}</version>
         </dependency>
         <dependency>
             <groupId>net.folivo</groupId>
