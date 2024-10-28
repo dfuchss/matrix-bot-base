@@ -47,7 +47,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <trixnity.version>4.8.1</trixnity.version>
         <serialization.version>1.7.3</serialization.version>
-        <ktor.version>3.0.0</ktor.version>
+        <ktor.version>2.3.12</ktor.version>
 
         <sonar.organization>dfuchss</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
