@@ -45,7 +45,7 @@
     </distributionManagement>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <trixnity.version>4.8.1</trixnity.version>
+        <trixnity.version>4.9.0</trixnity.version>
         <serialization.version>1.7.3</serialization.version>
         <ktor.version>2.3.12</ktor.version>
 
