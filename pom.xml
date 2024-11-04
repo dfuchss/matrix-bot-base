@@ -45,8 +45,11 @@
     </distributionManagement>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- Sync to https://github.com/benkuly/trixnity/blob/main/gradle/libs.versions.toml -->
         <trixnity.version>4.9.2</trixnity.version>
-        <serialization.version>1.7.3</serialization.version>
+        <serialization.version>1.7.1</serialization.version>
+        <couroutines-version>1.9.0</couroutines-version>
+        <ktor.version>2.3.12</ktor.version>
 
         <sonar.organization>dfuchss</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
@@ -57,7 +60,7 @@
             <dependency>
                 <groupId>org.jetbrains.kotlinx</groupId>
                 <artifactId>kotlinx-coroutines-bom</artifactId>
-                <version>1.9.0</version>
+                <version>${couroutines-version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -89,6 +92,11 @@
             <groupId>com.vdurmont</groupId>
             <artifactId>emoji-java</artifactId>
             <version>5.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>io.ktor</groupId>
+            <artifactId>ktor-client-java-jvm</artifactId>
+            <version>${ktor.version}</version>
         </dependency>
         <dependency>
             <groupId>net.folivo</groupId>
