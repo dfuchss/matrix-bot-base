@@ -76,8 +76,7 @@ class MatrixBot(
             matrixClient.api.authentication.logoutAll()
         }
 
-        matrixClient.stop()
-
+        matrixClient.stopSync()
         return logout
     }
 
