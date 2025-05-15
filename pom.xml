@@ -181,6 +181,10 @@
                 <artifactId>spotless-maven-plugin</artifactId>
                 <configuration combine.self="append">
                     <kotlin>
+                        <includes>
+                            <include>src/main/kotlin/**/*.kt</include>
+                            <include>src/test/kotlin/**/*.kt</include>
+                        </includes>
                         <ktlint>
                             <editorConfigPath>.editorconfig</editorConfigPath>
                         </ktlint>
