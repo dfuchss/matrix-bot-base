@@ -46,7 +46,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- Sync to https://github.com/benkuly/trixnity/blob/main/gradle/libs.versions.toml -->
-        <trixnity.version>4.16.1</trixnity.version>
+        <trixnity.version>4.16.3</trixnity.version>
         <serialization.version>1.8.1</serialization.version>
         <couroutines-version>1.10.2</couroutines-version>
         <ktor.version>3.2.0</ktor.version>
