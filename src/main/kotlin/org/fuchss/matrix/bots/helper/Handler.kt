@@ -1,6 +1,6 @@
 package org.fuchss.matrix.bots.helper
 
-import net.folivo.trixnity.client.media.okio.OkioMediaStore
+import net.folivo.trixnity.client.media.okio.createOkioMediaStoreModule
 import net.folivo.trixnity.client.room.message.react
 import net.folivo.trixnity.client.store.repository.exposed.createExposedRepositoriesModule
 import net.folivo.trixnity.core.model.EventId
@@ -28,7 +28,7 @@ private val logger: Logger = LoggerFactory.getLogger(MatrixBot::class.java)
 suspend fun createRepositoriesModule(config: IConfig) =
     createExposedRepositoriesModule(database = Database.connect("jdbc:h2:${config.dataDirectory}/database;DB_CLOSE_DELAY=-1"))
 
-fun createMediaStore(config: IConfig) = OkioMediaStore(File(config.dataDirectory + "/media").toOkioPath())
+fun createMediaStoreModule(config: IConfig) = createOkioMediaStoreModule(File(config.dataDirectory + "/media").toOkioPath())
 
 suspend fun decryptMessage(
     event: ClientEvent<EncryptedMessageEventContent>,

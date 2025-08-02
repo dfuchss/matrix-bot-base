@@ -10,7 +10,7 @@ import net.folivo.trixnity.core.MatrixServerException
 import org.fuchss.matrix.bots.command.ChangeUsernameCommand
 import org.fuchss.matrix.bots.command.LogoutCommand
 import org.fuchss.matrix.bots.command.QuitCommand
-import org.fuchss.matrix.bots.helper.createMediaStore
+import org.fuchss.matrix.bots.helper.createMediaStoreModule
 import org.fuchss.matrix.bots.helper.createRepositoriesModule
 import org.fuchss.matrix.bots.helper.handleCommand
 import org.fuchss.matrix.bots.helper.handleEncryptedCommand
@@ -63,7 +63,7 @@ class MatrixBotTest {
     }
 
     private suspend fun getMatrixClient(config: IConfig): MatrixClient {
-        val existingMatrixClient = MatrixClient.fromStore(createRepositoriesModule(config), createMediaStore(config)).getOrThrow()
+        val existingMatrixClient = MatrixClient.fromStore(createRepositoriesModule(config), createMediaStoreModule(config)).getOrThrow()
         if (existingMatrixClient != null) {
             return existingMatrixClient
         }
@@ -75,7 +75,7 @@ class MatrixBotTest {
                     identifier = IdentifierType.User(config.username),
                     password = config.password,
                     repositoriesModule = createRepositoriesModule(config),
-                    mediaStore = createMediaStore(config),
+                    mediaStoreModule = createMediaStoreModule(config),
                     initialDeviceDisplayName = "CI Test"
                 ).getOrThrow()
 

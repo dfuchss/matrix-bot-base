@@ -3,8 +3,6 @@ package org.fuchss.matrix.bots
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Semaphore
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
 import net.folivo.trixnity.client.MatrixClient
 import net.folivo.trixnity.client.room
 import net.folivo.trixnity.client.room.RoomService
@@ -31,6 +29,9 @@ import net.folivo.trixnity.core.serialization.events.contentType
 import net.folivo.trixnity.core.subscribeContent
 import org.slf4j.LoggerFactory
 import kotlin.reflect.KClass
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 /**
  * This class provides encapsulates a [MatrixClient] and its [IConfig] to provide a high level bot interface.
@@ -41,6 +42,7 @@ class MatrixBot(
 ) {
     private val logger = LoggerFactory.getLogger(MatrixBot::class.java)
 
+    @OptIn(ExperimentalTime::class)
     private val runningTimestamp = Clock.System.now()
     private val validStates = listOf(SyncState.RUNNING, SyncState.INITIAL_SYNC, SyncState.STARTED)
     private val runningLock = Semaphore(1, 1)
@@ -246,6 +248,7 @@ class MatrixBot(
         matrixClient.api.room.sendStateEvent(roomId, newState, stateKey = matrixClient.userId.full, asUserId = matrixClient.userId)
     }
 
+    @OptIn(ExperimentalTime::class)
     private fun isValidEventFromUser(
         event: ClientEvent<*>,
         listenNonUsers: Boolean,

@@ -55,7 +55,7 @@ private suspend fun getMatrixClient(config: Config): MatrixClient {
         identifier = IdentifierType.User(config.username),
         password = config.password,
         repositoriesModule = createRepositoriesModule(config),
-        mediaStore = createMediaStore(config),
+        mediaStoreModule = createMediaStoreModule(config),
         initialDeviceDisplayName = "An interesting bot",
     ).getOrThrow()
 
