@@ -50,8 +50,7 @@ fun MessageBuilder.markdown(markdown: String) {
  * Create a matrix.to link for a RoomId
  * @return the matrix.to link
  */
-@Suppress("DEPRECATION")
-fun RoomId.matrixTo(): String = "$MATRIX_TO_PREFIX${this.full}?via=${this.domain}"
+fun RoomId.matrixTo(): String = "$MATRIX_TO_PREFIX${this.full}?via=${this.full.substringAfter(":")}"
 
 /**
  * Create a matrix.to link for a UserId
