@@ -1,9 +1,9 @@
 package org.fuchss.matrix.bots.helper
 
-import net.folivo.trixnity.core.model.RoomId
-import net.folivo.trixnity.core.model.UserId
-import net.folivo.trixnity.core.model.events.EventType
-import net.folivo.trixnity.core.model.events.m.room.PowerLevelsEventContent
+import de.connect2x.trixnity.core.model.RoomId
+import de.connect2x.trixnity.core.model.UserId
+import de.connect2x.trixnity.core.model.events.EventType
+import de.connect2x.trixnity.core.model.events.m.room.PowerLevelsEventContent
 import org.fuchss.matrix.bots.MatrixBot
 
 const val ADMIN_POWER_LEVEL = 100L

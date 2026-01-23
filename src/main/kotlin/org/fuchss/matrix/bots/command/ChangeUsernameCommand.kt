@@ -1,12 +1,12 @@
 package org.fuchss.matrix.bots.command
 
-import net.folivo.trixnity.client.room.message.text
-import net.folivo.trixnity.core.model.EventId
-import net.folivo.trixnity.core.model.RoomId
-import net.folivo.trixnity.core.model.UserId
-import net.folivo.trixnity.core.model.events.m.room.RoomMessageEventContent
+import de.connect2x.trixnity.core.model.EventId
+import de.connect2x.trixnity.core.model.RoomId
+import de.connect2x.trixnity.core.model.UserId
+import de.connect2x.trixnity.core.model.events.m.room.RoomMessageEventContent
 import org.fuchss.matrix.bots.MatrixBot
 import org.fuchss.matrix.bots.helper.isModerator
+import org.jetbrains.exposed.sql.Table.Dual.text
 
 class ChangeUsernameCommand : Command() {
     override val name: String = "name"

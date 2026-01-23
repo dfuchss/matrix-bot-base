@@ -1,32 +1,33 @@
 package org.fuchss.matrix.bots
 
+import de.connect2x.trixnity.client.MatrixClient
+import de.connect2x.trixnity.client.room
+import de.connect2x.trixnity.client.room.RoomService
+import de.connect2x.trixnity.client.store.TimelineEvent
+import de.connect2x.trixnity.clientserverapi.client.RoomApiClient
+import de.connect2x.trixnity.clientserverapi.client.SyncApiClient
+import de.connect2x.trixnity.clientserverapi.client.SyncState
+import de.connect2x.trixnity.clientserverapi.model.user.ProfileField
+import de.connect2x.trixnity.core.ClientEventEmitter
+import de.connect2x.trixnity.core.Subscriber
+import de.connect2x.trixnity.core.model.EventId
+import de.connect2x.trixnity.core.model.RoomId
+import de.connect2x.trixnity.core.model.UserId
+import de.connect2x.trixnity.core.model.events.ClientEvent
+import de.connect2x.trixnity.core.model.events.EventContent
+import de.connect2x.trixnity.core.model.events.StateEventContent
+import de.connect2x.trixnity.core.model.events.idOrNull
+import de.connect2x.trixnity.core.model.events.m.room.MemberEventContent
+import de.connect2x.trixnity.core.model.events.m.room.Membership
+import de.connect2x.trixnity.core.model.events.originTimestampOrNull
+import de.connect2x.trixnity.core.model.events.roomIdOrNull
+import de.connect2x.trixnity.core.model.events.senderOrNull
+import de.connect2x.trixnity.core.model.events.stateKeyOrNull
+import de.connect2x.trixnity.core.serialization.events.contentType
+import de.connect2x.trixnity.core.subscribeContent
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Semaphore
-import net.folivo.trixnity.client.MatrixClient
-import net.folivo.trixnity.client.room
-import net.folivo.trixnity.client.room.RoomService
-import net.folivo.trixnity.client.store.TimelineEvent
-import net.folivo.trixnity.clientserverapi.client.RoomApiClient
-import net.folivo.trixnity.clientserverapi.client.SyncApiClient
-import net.folivo.trixnity.clientserverapi.client.SyncState
-import net.folivo.trixnity.core.ClientEventEmitter
-import net.folivo.trixnity.core.Subscriber
-import net.folivo.trixnity.core.model.EventId
-import net.folivo.trixnity.core.model.RoomId
-import net.folivo.trixnity.core.model.UserId
-import net.folivo.trixnity.core.model.events.ClientEvent
-import net.folivo.trixnity.core.model.events.EventContent
-import net.folivo.trixnity.core.model.events.StateEventContent
-import net.folivo.trixnity.core.model.events.idOrNull
-import net.folivo.trixnity.core.model.events.m.room.MemberEventContent
-import net.folivo.trixnity.core.model.events.m.room.Membership
-import net.folivo.trixnity.core.model.events.originTimestampOrNull
-import net.folivo.trixnity.core.model.events.roomIdOrNull
-import net.folivo.trixnity.core.model.events.senderOrNull
-import net.folivo.trixnity.core.model.events.stateKeyOrNull
-import net.folivo.trixnity.core.serialization.events.contentType
-import net.folivo.trixnity.core.subscribeContent
 import org.slf4j.LoggerFactory
 import kotlin.reflect.KClass
 import kotlin.time.Clock
@@ -106,7 +107,7 @@ class MatrixBot(
     suspend fun getStateEvent(
         type: String,
         roomId: RoomId
-    ): Result<StateEventContent> = matrixClient.api.room.getStateEvent(type, roomId)
+    ): Result<ClientEvent.StateBaseEvent<*>> = matrixClient.api.room.getStateEvent(type, roomId)
 
     /**
      * Send a certain state event
@@ -227,7 +228,9 @@ class MatrixBot(
     }
 
     suspend fun rename(newName: String) {
-        matrixClient.api.user.setDisplayName(matrixClient.userId, newName)
+        matrixClient.api.user
+            .setProfileField(matrixClient.userId, ProfileField.DisplayName(newName))
+            .getOrThrow()
     }
 
     /**
@@ -245,7 +248,9 @@ class MatrixBot(
                 .getOrNull() ?: return
         val myself = members.firstOrNull { it.stateKey == matrixClient.userId.full }?.content ?: return
         val newState = myself.copy(displayName = newNameInRoom)
-        matrixClient.api.room.sendStateEvent(roomId, newState, stateKey = matrixClient.userId.full, asUserId = matrixClient.userId)
+        matrixClient.api.room
+            .sendStateEvent(roomId, newState, stateKey = matrixClient.userId.full)
+            .getOrThrow()
     }
 
     @OptIn(ExperimentalTime::class)

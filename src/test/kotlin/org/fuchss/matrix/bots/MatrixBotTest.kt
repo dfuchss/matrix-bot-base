@@ -1,15 +1,17 @@
 package org.fuchss.matrix.bots
 
+import de.connect2x.trixnity.client.MatrixClient
+import de.connect2x.trixnity.client.create
+import de.connect2x.trixnity.clientserverapi.client.MatrixClientAuthProviderData
+import de.connect2x.trixnity.clientserverapi.client.classicLogin
+import de.connect2x.trixnity.clientserverapi.model.authentication.IdentifierType
+import de.connect2x.trixnity.core.MatrixServerException
 import io.ktor.http.Url
 import kotlinx.coroutines.runBlocking
-import net.folivo.trixnity.client.MatrixClient
-import net.folivo.trixnity.client.fromStore
-import net.folivo.trixnity.client.login
-import net.folivo.trixnity.clientserverapi.model.authentication.IdentifierType
-import net.folivo.trixnity.core.MatrixServerException
 import org.fuchss.matrix.bots.command.ChangeUsernameCommand
 import org.fuchss.matrix.bots.command.LogoutCommand
 import org.fuchss.matrix.bots.command.QuitCommand
+import org.fuchss.matrix.bots.helper.createCryptoDriverModule
 import org.fuchss.matrix.bots.helper.createMediaStoreModule
 import org.fuchss.matrix.bots.helper.createRepositoriesModule
 import org.fuchss.matrix.bots.helper.handleCommand
@@ -63,20 +65,24 @@ class MatrixBotTest {
     }
 
     private suspend fun getMatrixClient(config: IConfig): MatrixClient {
-        val existingMatrixClient = MatrixClient.fromStore(createRepositoriesModule(config), createMediaStoreModule(config)).getOrThrow()
+        val existingMatrixClient = MatrixClient.create(createRepositoriesModule(config), createMediaStoreModule(config), createCryptoDriverModule()).getOrNull()
         if (existingMatrixClient != null) {
             return existingMatrixClient
         }
 
         val matrixClient =
             MatrixClient
-                .login(
-                    baseUrl = Url(config.baseUrl),
-                    identifier = IdentifierType.User(config.username),
-                    password = config.password,
-                    repositoriesModule = createRepositoriesModule(config),
-                    mediaStoreModule = createMediaStoreModule(config),
-                    initialDeviceDisplayName = "CI Test"
+                .create(
+                    createRepositoriesModule(config),
+                    createMediaStoreModule(config),
+                    createCryptoDriverModule(),
+                    MatrixClientAuthProviderData
+                        .classicLogin(
+                            baseUrl = Url(config.baseUrl),
+                            identifier = IdentifierType.User(config.username),
+                            password = config.password,
+                            initialDeviceDisplayName = "CI Test"
+                        ).getOrThrow()
                 ).getOrThrow()
 
         return matrixClient
