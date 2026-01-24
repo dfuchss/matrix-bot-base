@@ -1,5 +1,7 @@
 package org.fuchss.matrix.bots
 
+import de.connect2x.lognity.api.backend.Backend
+import de.connect2x.lognity.backend.DefaultBackend
 import de.connect2x.trixnity.client.MatrixClient
 import de.connect2x.trixnity.client.create
 import de.connect2x.trixnity.clientserverapi.client.MatrixClientAuthProviderData
@@ -25,6 +27,7 @@ import java.io.File
 class MatrixBotTest {
     @BeforeEach
     fun cleanup() {
+        Backend.set(DefaultBackend)
         // Clean up the target directory before each test
         val targetDir = File("target/data")
         if (targetDir.exists()) {
