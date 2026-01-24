@@ -71,15 +71,15 @@ class MatrixBot(
         runningLock.acquire()
 
         logger.info("Shutting down!")
+        matrixClient.stopSync()
         while (matrixClient.syncState.value in validStates) {
+            logger.info("Waiting for sync state; currently: ${matrixClient.syncState.value}")
             delay(500)
         }
         running = false
         if (logout) {
             matrixClient.api.authentication.logoutAll()
         }
-
-        matrixClient.stopSync()
         return logout
     }
 
@@ -227,9 +227,8 @@ class MatrixBot(
     /**
      * Quit the bot. This will end the lock of [startBlocking]. Additionally, it will log out all instances of the bot user.
      */
-    suspend fun quit(logout: Boolean = false) {
+    fun quit(logout: Boolean = false) {
         this.logout = logout
-        matrixClient.stopSync()
         runningLock.release()
     }
 
