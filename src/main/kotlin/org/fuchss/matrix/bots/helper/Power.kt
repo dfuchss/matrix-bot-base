@@ -8,6 +8,7 @@ import org.fuchss.matrix.bots.MatrixBot
 
 const val ADMIN_POWER_LEVEL = 100L
 const val MOD_POWER_LEVEL = 50L
+const val MIN_POWER_LEVEL = 0L
 
 /**
  * Get the current permission level of the bot in a room
@@ -19,7 +20,7 @@ suspend fun MatrixBot.powerLevel(
     roomId: RoomId,
     userId: UserId? = null
 ): Long {
-    val levels = getStateEvent<PowerLevelsEventContent>(roomId) ?: return 0
+    val levels = getStateEvent<PowerLevelsEventContent>(roomId) ?: return MIN_POWER_LEVEL
     return levels.users[userId ?: this.self()] ?: levels.usersDefault
 }
 

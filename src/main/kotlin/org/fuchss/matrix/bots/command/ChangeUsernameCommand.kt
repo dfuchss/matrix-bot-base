@@ -5,10 +5,13 @@ import de.connect2x.trixnity.core.model.RoomId
 import de.connect2x.trixnity.core.model.UserId
 import de.connect2x.trixnity.core.model.events.m.room.RoomMessageEventContent
 import org.fuchss.matrix.bots.MatrixBot
+import org.fuchss.matrix.bots.helper.canSendMessages
 import org.fuchss.matrix.bots.helper.isModerator
 import org.jetbrains.exposed.sql.Table.Dual.text
 
-class ChangeUsernameCommand : Command() {
+class ChangeUsernameCommand(
+    private val globally: Boolean = false
+) : Command() {
     override val name: String = "name"
     override val params: String = "{NEW_NAME}"
     override val help: String = "sets the display name of the bot for this channel to NEW_NAME"
@@ -30,13 +33,23 @@ class ChangeUsernameCommand : Command() {
         textEventId: EventId,
         textEvent: RoomMessageEventContent.TextBased.Text
     ) {
-        if (!sender.isModerator(matrixBot, roomId)) {
-            matrixBot.room().sendMessage(roomId) { text("You are not a moderator in this room.") }
+        if (!(matrixBot.canSendMessages(roomId))) {
+            logger.error("I'm not even allowed to send messages in $roomId, skipping rename")
             return
         }
 
         if (parameters.isBlank()) {
             matrixBot.room().sendMessage(roomId) { text("Please provide a new name for the bot.") }
+            return
+        }
+
+        if (globally) {
+            matrixBot.rename(parameters)
+            return
+        }
+
+        if (!sender.isModerator(matrixBot, roomId)) {
+            matrixBot.room().sendMessage(roomId) { text("You are not a moderator in this room.") }
             return
         }
 
