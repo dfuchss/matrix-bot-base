@@ -126,15 +126,14 @@ class MatrixBot(
      * @return the event
      */
     suspend inline fun <reified C : StateEventContent> getStateEvent(roomId: RoomId): C? {
-        val logger = LoggerFactory.getLogger(MatrixBot::class.java)
         val type = contentMappings().state.contentType(C::class)
-        val stateResult = getStateEvent(type, roomId).onFailure { logger.error(it.message, it) }
+        val stateResult = getStateEvent(type, roomId).onFailure { LoggerFactory.getLogger(MatrixBot::class.java).error(it.message, it) }
 
         val data = stateResult.getOrNull() ?: return null
         if (data is C) {
             return data
         }
-        throw IllegalStateException("Expected type: ${C::class.java} but got ${data::class.java}")
+        error("Expected type: ${C::class.java} but got ${data::class.java}")
     }
 
     /**
