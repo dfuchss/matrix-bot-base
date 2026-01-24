@@ -123,7 +123,7 @@ class MatrixBot(
      * Get a state event from a room
      * @param[C] the type of the event [StateEventContent]
      * @param[roomId] the room to get the event from
-     * @return the event
+     * @return the event, or null if the state event cannot be retrieved or when an error occurs
      */
     suspend inline fun <reified C : StateEventContent> getStateEvent(roomId: RoomId): C? {
         val type = contentMappings().state.contentType(C::class)
