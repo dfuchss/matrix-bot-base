@@ -94,7 +94,7 @@ class MatrixBot(
     fun roomApi() = matrixClient.api.room
 
     /**
-     * Get teh content mappings for [getStateEvent]
+     * Get the content mappings for [getStateEvent]
      */
     fun contentMappings() = matrixClient.api.room.contentMappings
 
@@ -107,7 +107,7 @@ class MatrixBot(
     suspend fun getStateEvent(
         type: String,
         roomId: RoomId
-    ): Result<ClientEvent.StateBaseEvent<*>> = matrixClient.api.room.getStateEvent(type, roomId)
+    ): Result<StateEventContent> = matrixClient.api.room.getStateEventContent(type, roomId)
 
     /**
      * Send a certain state event
@@ -125,10 +125,16 @@ class MatrixBot(
      * @param[roomId] the room to get the event from
      * @return the event
      */
-    suspend inline fun <reified C : StateEventContent> getStateEvent(roomId: RoomId): Result<C> {
+    suspend inline fun <reified C : StateEventContent> getStateEvent(roomId: RoomId): C? {
+        val logger = LoggerFactory.getLogger(MatrixBot::class.java)
         val type = contentMappings().state.contentType(C::class)
-        @Suppress("UNCHECKED_CAST")
-        return getStateEvent(type, roomId) as Result<C>
+        val stateResult = getStateEvent(type, roomId).onFailure { logger.error(it.message, it) }
+
+        val data = stateResult.getOrNull() ?: return null
+        if (data is C) {
+            return data
+        }
+        throw IllegalStateException("Expected type: ${C::class.java} but got ${data::class.java}")
     }
 
     /**

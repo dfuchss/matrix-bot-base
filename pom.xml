@@ -47,6 +47,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- Sync to https://github.com/benkuly/trixnity/blob/main/gradle/libs.versions.toml -->
         <trixnity.version>5.0.1</trixnity.version>
+        <lognity.version>1.2.1</lognity.version>
         <serialization.version>1.10.0</serialization.version>
         <couroutines-version>1.10.2</couroutines-version>
         <ktor.version>3.4.0</ktor.version>
@@ -92,6 +93,21 @@
             <groupId>com.vdurmont</groupId>
             <artifactId>emoji-java</artifactId>
             <version>5.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>de.connect2x.lognity</groupId>
+            <artifactId>lognity-api-jvm</artifactId>
+            <version>${lognity.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>de.connect2x.lognity</groupId>
+            <artifactId>lognity-core-jvm</artifactId>
+            <version>${lognity.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>de.connect2x.lognity</groupId>
+            <artifactId>lognity-slf4j-jvm</artifactId>
+            <version>${lognity.version}</version>
         </dependency>
         <dependency>
             <groupId>de.connect2x.trixnity</groupId>
