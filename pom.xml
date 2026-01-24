@@ -111,7 +111,7 @@
         </dependency>
         <dependency>
             <groupId>de.connect2x.trixnity</groupId>
-            <artifactId>trixnity-client-cryptodriver-libolm-jvm</artifactId>
+            <artifactId>trixnity-client-cryptodriver-vodozemac-jvm</artifactId>
             <version>${trixnity.version}</version>
         </dependency>
         <dependency>
