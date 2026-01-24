@@ -46,7 +46,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- Sync to https://github.com/benkuly/trixnity/blob/main/gradle/libs.versions.toml -->
-        <trixnity.version>5.0.0</trixnity.version>
+        <trixnity.version>5.0.1</trixnity.version>
         <serialization.version>1.10.0</serialization.version>
         <couroutines-version>1.10.2</couroutines-version>
         <ktor.version>3.4.0</ktor.version>
@@ -94,22 +94,22 @@
             <version>5.1.1</version>
         </dependency>
         <dependency>
-            <groupId>de.connect2x</groupId>
-            <artifactId>trixnity-client-cryptodriver-vodozemac-jvm</artifactId>
+            <groupId>de.connect2x.trixnity</groupId>
+            <artifactId>trixnity-client-cryptodriver-libolm-jvm</artifactId>
             <version>${trixnity.version}</version>
         </dependency>
         <dependency>
-            <groupId>de.connect2x</groupId>
+            <groupId>de.connect2x.trixnity</groupId>
             <artifactId>trixnity-client-jvm</artifactId>
             <version>${trixnity.version}</version>
         </dependency>
         <dependency>
-            <groupId>de.connect2x</groupId>
+            <groupId>de.connect2x.trixnity</groupId>
             <artifactId>trixnity-client-media-okio-jvm</artifactId>
             <version>${trixnity.version}</version>
         </dependency>
         <dependency>
-            <groupId>de.connect2x</groupId>
+            <groupId>de.connect2x.trixnity</groupId>
             <artifactId>trixnity-client-repository-exposed-jvm</artifactId>
             <version>${trixnity.version}</version>
         </dependency>

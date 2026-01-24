@@ -3,7 +3,7 @@ package org.fuchss.matrix.bots.helper
 import de.connect2x.trixnity.client.CryptoDriverModule
 import de.connect2x.trixnity.client.MediaStoreModule
 import de.connect2x.trixnity.client.RepositoriesModule
-import de.connect2x.trixnity.client.cryptodriver.vodozemac.vodozemac
+import de.connect2x.trixnity.client.cryptodriver.libolm.libOlm
 import de.connect2x.trixnity.client.media.okio.okio
 import de.connect2x.trixnity.client.room.message.react
 import de.connect2x.trixnity.client.store.repository.exposed.exposed
@@ -34,7 +34,7 @@ fun createRepositoriesModule(config: IConfig) =
 
 fun createMediaStoreModule(config: IConfig) = MediaStoreModule.okio(File(config.dataDirectory + "/media").toOkioPath())
 
-fun createCryptoDriverModule() = CryptoDriverModule.vodozemac()
+fun createCryptoDriverModule() = CryptoDriverModule.libOlm()
 
 suspend fun decryptMessage(
     event: ClientEvent<EncryptedMessageEventContent>,
