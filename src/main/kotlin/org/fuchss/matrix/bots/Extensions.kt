@@ -2,15 +2,15 @@ package org.fuchss.matrix.bots
 
 import com.vdurmont.emoji.Emoji
 import com.vdurmont.emoji.EmojiManager
+import de.connect2x.trixnity.client.room.message.MessageBuilder
+import de.connect2x.trixnity.client.room.message.text
+import de.connect2x.trixnity.core.model.RoomAliasId
+import de.connect2x.trixnity.core.model.RoomId
+import de.connect2x.trixnity.core.model.UserId
+import de.connect2x.trixnity.core.model.events.m.room.CanonicalAliasEventContent
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withTimeoutOrNull
-import net.folivo.trixnity.client.room.message.MessageBuilder
-import net.folivo.trixnity.client.room.message.text
-import net.folivo.trixnity.core.model.RoomAliasId
-import net.folivo.trixnity.core.model.RoomId
-import net.folivo.trixnity.core.model.UserId
-import net.folivo.trixnity.core.model.events.m.room.CanonicalAliasEventContent
 import org.commonmark.parser.Parser
 import org.commonmark.renderer.html.HtmlRenderer
 import kotlin.time.Duration
@@ -97,7 +97,7 @@ suspend fun MatrixBot.resolvePublicRoomIdOrNull(publicRoomAlias: String): RoomId
 
     val allKnownRooms = roomApi().getJoinedRooms().getOrThrow()
     for (room in allKnownRooms) {
-        val aliasState = getStateEvent<CanonicalAliasEventContent>(room).getOrNull() ?: continue
+        val aliasState = getStateEvent<CanonicalAliasEventContent>(room) ?: continue
         if (aliasState.alias == roomAlias) {
             return room
         }

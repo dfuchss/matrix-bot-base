@@ -1,32 +1,33 @@
 package org.fuchss.matrix.bots
 
+import de.connect2x.trixnity.client.MatrixClient
+import de.connect2x.trixnity.client.room
+import de.connect2x.trixnity.client.room.RoomService
+import de.connect2x.trixnity.client.store.TimelineEvent
+import de.connect2x.trixnity.clientserverapi.client.RoomApiClient
+import de.connect2x.trixnity.clientserverapi.client.SyncApiClient
+import de.connect2x.trixnity.clientserverapi.client.SyncState
+import de.connect2x.trixnity.clientserverapi.model.user.ProfileField
+import de.connect2x.trixnity.core.ClientEventEmitter
+import de.connect2x.trixnity.core.Subscriber
+import de.connect2x.trixnity.core.model.EventId
+import de.connect2x.trixnity.core.model.RoomId
+import de.connect2x.trixnity.core.model.UserId
+import de.connect2x.trixnity.core.model.events.ClientEvent
+import de.connect2x.trixnity.core.model.events.EventContent
+import de.connect2x.trixnity.core.model.events.StateEventContent
+import de.connect2x.trixnity.core.model.events.idOrNull
+import de.connect2x.trixnity.core.model.events.m.room.MemberEventContent
+import de.connect2x.trixnity.core.model.events.m.room.Membership
+import de.connect2x.trixnity.core.model.events.originTimestampOrNull
+import de.connect2x.trixnity.core.model.events.roomIdOrNull
+import de.connect2x.trixnity.core.model.events.senderOrNull
+import de.connect2x.trixnity.core.model.events.stateKeyOrNull
+import de.connect2x.trixnity.core.serialization.events.contentType
+import de.connect2x.trixnity.core.subscribeContent
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Semaphore
-import net.folivo.trixnity.client.MatrixClient
-import net.folivo.trixnity.client.room
-import net.folivo.trixnity.client.room.RoomService
-import net.folivo.trixnity.client.store.TimelineEvent
-import net.folivo.trixnity.clientserverapi.client.RoomApiClient
-import net.folivo.trixnity.clientserverapi.client.SyncApiClient
-import net.folivo.trixnity.clientserverapi.client.SyncState
-import net.folivo.trixnity.core.ClientEventEmitter
-import net.folivo.trixnity.core.Subscriber
-import net.folivo.trixnity.core.model.EventId
-import net.folivo.trixnity.core.model.RoomId
-import net.folivo.trixnity.core.model.UserId
-import net.folivo.trixnity.core.model.events.ClientEvent
-import net.folivo.trixnity.core.model.events.EventContent
-import net.folivo.trixnity.core.model.events.StateEventContent
-import net.folivo.trixnity.core.model.events.idOrNull
-import net.folivo.trixnity.core.model.events.m.room.MemberEventContent
-import net.folivo.trixnity.core.model.events.m.room.Membership
-import net.folivo.trixnity.core.model.events.originTimestampOrNull
-import net.folivo.trixnity.core.model.events.roomIdOrNull
-import net.folivo.trixnity.core.model.events.senderOrNull
-import net.folivo.trixnity.core.model.events.stateKeyOrNull
-import net.folivo.trixnity.core.serialization.events.contentType
-import net.folivo.trixnity.core.subscribeContent
 import org.slf4j.LoggerFactory
 import kotlin.reflect.KClass
 import kotlin.time.Clock
@@ -70,15 +71,15 @@ class MatrixBot(
         runningLock.acquire()
 
         logger.info("Shutting down!")
+        matrixClient.stopSync()
         while (matrixClient.syncState.value in validStates) {
+            logger.info("Waiting for sync state; currently: ${matrixClient.syncState.value}")
             delay(500)
         }
         running = false
         if (logout) {
             matrixClient.api.authentication.logoutAll()
         }
-
-        matrixClient.stopSync()
         return logout
     }
 
@@ -93,7 +94,7 @@ class MatrixBot(
     fun roomApi() = matrixClient.api.room
 
     /**
-     * Get teh content mappings for [getStateEvent]
+     * Get the content mappings for [getStateEvent]
      */
     fun contentMappings() = matrixClient.api.room.contentMappings
 
@@ -106,7 +107,7 @@ class MatrixBot(
     suspend fun getStateEvent(
         type: String,
         roomId: RoomId
-    ): Result<StateEventContent> = matrixClient.api.room.getStateEvent(type, roomId)
+    ): Result<StateEventContent> = matrixClient.api.room.getStateEventContent(type, roomId)
 
     /**
      * Send a certain state event
@@ -122,12 +123,17 @@ class MatrixBot(
      * Get a state event from a room
      * @param[C] the type of the event [StateEventContent]
      * @param[roomId] the room to get the event from
-     * @return the event
+     * @return the event, or null if the state event cannot be retrieved or when an error occurs
      */
-    suspend inline fun <reified C : StateEventContent> getStateEvent(roomId: RoomId): Result<C> {
+    suspend inline fun <reified C : StateEventContent> getStateEvent(roomId: RoomId): C? {
         val type = contentMappings().state.contentType(C::class)
-        @Suppress("UNCHECKED_CAST")
-        return getStateEvent(type, roomId) as Result<C>
+        val stateResult = getStateEvent(type, roomId).onFailure { LoggerFactory.getLogger(MatrixBot::class.java).error(it.message, it) }
+
+        val data = stateResult.getOrNull() ?: return null
+        if (data is C) {
+            return data
+        }
+        error("Expected type: ${C::class.java} but got ${data::class.java}")
     }
 
     /**
@@ -220,14 +226,15 @@ class MatrixBot(
     /**
      * Quit the bot. This will end the lock of [startBlocking]. Additionally, it will log out all instances of the bot user.
      */
-    suspend fun quit(logout: Boolean = false) {
+    fun quit(logout: Boolean = false) {
         this.logout = logout
-        matrixClient.stopSync()
         runningLock.release()
     }
 
     suspend fun rename(newName: String) {
-        matrixClient.api.user.setDisplayName(matrixClient.userId, newName)
+        matrixClient.api.user
+            .setProfileField(matrixClient.userId, ProfileField.DisplayName(newName))
+            .getOrThrow()
     }
 
     /**
@@ -245,7 +252,9 @@ class MatrixBot(
                 .getOrNull() ?: return
         val myself = members.firstOrNull { it.stateKey == matrixClient.userId.full }?.content ?: return
         val newState = myself.copy(displayName = newNameInRoom)
-        matrixClient.api.room.sendStateEvent(roomId, newState, stateKey = matrixClient.userId.full, asUserId = matrixClient.userId)
+        matrixClient.api.room
+            .sendStateEvent(roomId, newState, stateKey = matrixClient.userId.full)
+            .getOrThrow()
     }
 
     @OptIn(ExperimentalTime::class)

@@ -23,9 +23,11 @@ Start by defining the creation of bot by creating a `Main.kt` file:
 private lateinit var commands: List<Command>
 
 fun main() {
+    Backend.set(DefaultBackend)
+    
     runBlocking {
         val config: IConfig = // Load config here 
-            commands = listOf(HelpCommand(config, "FancyBot") { commands }, QuitCommand(config), LogoutCommand(config), ChangeUsernameCommand(), /* Custom commands here */)
+            commands = listOf(HelpCommand(config, "FancyBot") { commands }, QuitCommand(config), LogoutCommand(config), ChangeUsernameCommand(config), /* Custom commands here */)
 
         val matrixClient = getMatrixClient(config)
 
@@ -45,18 +47,25 @@ fun main() {
 }
 
 private suspend fun getMatrixClient(config: Config): MatrixClient {
-    val existingMatrixClient = MatrixClient.fromStore(createRepositoriesModule(config), createMediaStore(config)).getOrThrow()
+    val existingMatrixClient = MatrixClient.create(
+        createRepositoriesModule(config),
+        createMediaStoreModule(config),
+        createCryptoDriverModule()
+    ).getOrNull()
     if (existingMatrixClient != null) {
         return existingMatrixClient
     }
 
-    val matrixClient = MatrixClient.login(
-        baseUrl = Url(config.baseUrl),
-        identifier = IdentifierType.User(config.username),
-        password = config.password,
-        repositoriesModule = createRepositoriesModule(config),
-        mediaStoreModule = createMediaStoreModule(config),
-        initialDeviceDisplayName = "An interesting bot",
+    val matrixClient = MatrixClient.create(
+        createRepositoriesModule(config),
+        createMediaStoreModule(config),
+        createCryptoDriverModule(),
+        MatrixClientAuthProviderData.classicLogin(
+            baseUrl = Url(config.baseUrl),
+            identifier = IdentifierType.User(config.username),
+            password = config.password,
+            initialDeviceDisplayName = "An interesting bot"
+        ).getOrThrow()
     ).getOrThrow()
 
     return matrixClient

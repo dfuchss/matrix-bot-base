@@ -1,18 +1,22 @@
 package org.fuchss.matrix.bots.helper
 
-import net.folivo.trixnity.client.media.okio.createOkioMediaStoreModule
-import net.folivo.trixnity.client.room.message.react
-import net.folivo.trixnity.client.store.repository.exposed.createExposedRepositoriesModule
-import net.folivo.trixnity.core.model.EventId
-import net.folivo.trixnity.core.model.RoomId
-import net.folivo.trixnity.core.model.UserId
-import net.folivo.trixnity.core.model.events.ClientEvent
-import net.folivo.trixnity.core.model.events.idOrNull
-import net.folivo.trixnity.core.model.events.m.room.EncryptedMessageEventContent
-import net.folivo.trixnity.core.model.events.m.room.RoomMessageEventContent
-import net.folivo.trixnity.core.model.events.m.room.RoomMessageEventContent.TextBased.Text
-import net.folivo.trixnity.core.model.events.roomIdOrNull
-import net.folivo.trixnity.core.model.events.senderOrNull
+import de.connect2x.trixnity.client.CryptoDriverModule
+import de.connect2x.trixnity.client.MediaStoreModule
+import de.connect2x.trixnity.client.RepositoriesModule
+import de.connect2x.trixnity.client.cryptodriver.vodozemac.vodozemac
+import de.connect2x.trixnity.client.media.okio.okio
+import de.connect2x.trixnity.client.room.message.react
+import de.connect2x.trixnity.client.store.repository.exposed.exposed
+import de.connect2x.trixnity.core.model.EventId
+import de.connect2x.trixnity.core.model.RoomId
+import de.connect2x.trixnity.core.model.UserId
+import de.connect2x.trixnity.core.model.events.ClientEvent
+import de.connect2x.trixnity.core.model.events.idOrNull
+import de.connect2x.trixnity.core.model.events.m.room.EncryptedMessageEventContent
+import de.connect2x.trixnity.core.model.events.m.room.RoomMessageEventContent
+import de.connect2x.trixnity.core.model.events.m.room.RoomMessageEventContent.TextBased.Text
+import de.connect2x.trixnity.core.model.events.roomIdOrNull
+import de.connect2x.trixnity.core.model.events.senderOrNull
 import okio.Path.Companion.toOkioPath
 import org.fuchss.matrix.bots.IConfig
 import org.fuchss.matrix.bots.MatrixBot
@@ -25,10 +29,12 @@ import java.io.File
 
 private val logger: Logger = LoggerFactory.getLogger(MatrixBot::class.java)
 
-suspend fun createRepositoriesModule(config: IConfig) =
-    createExposedRepositoriesModule(database = Database.connect("jdbc:h2:${config.dataDirectory}/database;DB_CLOSE_DELAY=-1"))
+fun createRepositoriesModule(config: IConfig) =
+    RepositoriesModule.exposed(database = Database.connect("jdbc:h2:${config.dataDirectory}/database;DB_CLOSE_DELAY=-1"))
 
-fun createMediaStoreModule(config: IConfig) = createOkioMediaStoreModule(File(config.dataDirectory + "/media").toOkioPath())
+fun createMediaStoreModule(config: IConfig) = MediaStoreModule.okio(File(config.dataDirectory + "/media").toOkioPath())
+
+fun createCryptoDriverModule() = CryptoDriverModule.vodozemac()
 
 suspend fun decryptMessage(
     event: ClientEvent<EncryptedMessageEventContent>,

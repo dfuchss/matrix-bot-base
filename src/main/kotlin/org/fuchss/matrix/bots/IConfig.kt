@@ -1,6 +1,6 @@
 package org.fuchss.matrix.bots
 
-import net.folivo.trixnity.core.model.UserId
+import de.connect2x.trixnity.core.model.UserId
 
 interface IConfig {
     /**

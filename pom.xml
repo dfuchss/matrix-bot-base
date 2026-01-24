@@ -9,7 +9,7 @@
     </parent>
 
     <artifactId>matrix-bot-base</artifactId>
-    <version>0.15.3-SNAPSHOT</version>
+    <version>0.16.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>Matrix Bot Base</name>
     <description>Base project for matrix bots</description>
@@ -46,7 +46,8 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- Sync to https://github.com/benkuly/trixnity/blob/main/gradle/libs.versions.toml -->
-        <trixnity.version>4.22.7</trixnity.version>
+        <trixnity.version>5.0.1</trixnity.version>
+        <lognity.version>1.2.1</lognity.version>
         <serialization.version>1.10.0</serialization.version>
         <couroutines-version>1.10.2</couroutines-version>
         <ktor.version>3.4.0</ktor.version>
@@ -94,24 +95,44 @@
             <version>5.1.1</version>
         </dependency>
         <dependency>
-            <groupId>io.ktor</groupId>
-            <artifactId>ktor-client-java-jvm</artifactId>
-            <version>${ktor.version}</version>
+            <groupId>de.connect2x.lognity</groupId>
+            <artifactId>lognity-api-jvm</artifactId>
+            <version>${lognity.version}</version>
         </dependency>
         <dependency>
-            <groupId>net.folivo</groupId>
+            <groupId>de.connect2x.lognity</groupId>
+            <artifactId>lognity-core-jvm</artifactId>
+            <version>${lognity.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>de.connect2x.lognity</groupId>
+            <artifactId>lognity-slf4j-jvm</artifactId>
+            <version>${lognity.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>de.connect2x.trixnity</groupId>
+            <artifactId>trixnity-client-cryptodriver-vodozemac-jvm</artifactId>
+            <version>${trixnity.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>de.connect2x.trixnity</groupId>
             <artifactId>trixnity-client-jvm</artifactId>
             <version>${trixnity.version}</version>
         </dependency>
         <dependency>
-            <groupId>net.folivo</groupId>
+            <groupId>de.connect2x.trixnity</groupId>
             <artifactId>trixnity-client-media-okio-jvm</artifactId>
             <version>${trixnity.version}</version>
         </dependency>
         <dependency>
-            <groupId>net.folivo</groupId>
+            <groupId>de.connect2x.trixnity</groupId>
             <artifactId>trixnity-client-repository-exposed-jvm</artifactId>
             <version>${trixnity.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.ktor</groupId>
+            <artifactId>ktor-client-java-jvm</artifactId>
+            <version>${ktor.version}</version>
         </dependency>
         <dependency>
             <groupId>org.commonmark</groupId>
