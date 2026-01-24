@@ -52,7 +52,7 @@ class MatrixBotTest {
                             override val users: List<String> = listOf()
                         }
 
-                    val commands = listOf(QuitCommand(config), LogoutCommand(config), ChangeUsernameCommand())
+                    val commands = listOf(QuitCommand(config), LogoutCommand(config), ChangeUsernameCommand(config))
 
                     val matrixClient = getMatrixClient(config)
 
