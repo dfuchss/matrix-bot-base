@@ -71,6 +71,7 @@ class MatrixBot(
         runningLock.acquire()
 
         logger.info("Shutting down!")
+        delay(1000) // Give some time to finish ongoing tasks
         matrixClient.stopSync()
         while (matrixClient.syncState.value in validStates) {
             logger.info("Waiting for sync state; currently: ${matrixClient.syncState.value}")
