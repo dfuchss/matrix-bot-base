@@ -36,10 +36,12 @@ import kotlin.time.Instant
 
 /**
  * This class provides encapsulates a [MatrixClient] and its [IConfig] to provide a high level bot interface.
+ * If you set @param[registerJoinHandler], join events initiated by [IConfig.isUser] are handled.
  */
 class MatrixBot(
     private val matrixClient: MatrixClient,
-    private val config: IConfig
+    private val config: IConfig,
+    registerJoinHandler: Boolean = true
 ) {
     private val logger = LoggerFactory.getLogger(MatrixBot::class.java)
 
@@ -52,7 +54,9 @@ class MatrixBot(
     private var logout: Boolean = false
 
     init {
-        matrixClient.api.sync.subscribeContent { event -> handleJoinEvent(event) }
+        if (registerJoinHandler) {
+            matrixClient.api.sync.subscribeContent { event -> handleJoinEvent(event) }
+        }
     }
 
     /**
