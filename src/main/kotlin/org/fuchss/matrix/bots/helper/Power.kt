@@ -108,3 +108,25 @@ suspend fun MatrixBot.isModerator(
     userId: UserId,
     roomId: RoomId
 ): Boolean = powerLevel(roomId, userId) >= MOD_POWER_LEVEL
+
+/**
+ * Determine whether a user id belongs to an authorized user.
+ * @param[user] the user id to check
+ * @return indicator for authorization
+ */
+fun MatrixBot.isUser(user: UserId?): Boolean {
+    if (user == null) {
+        return false
+    }
+    if (config().users.isEmpty()) {
+        return true
+    }
+    return config().users.any { user.full.endsWith(it) }
+}
+
+/**
+ * Determine whether a user id belongs to a bot admin.
+ * @param[user] the user id to check
+ * @return indicator for admin
+ */
+fun MatrixBot.isBotAdmin(user: UserId?): Boolean = user != null && config().admins.contains(user.full)

@@ -5,20 +5,16 @@ import de.connect2x.trixnity.core.model.EventId
 import de.connect2x.trixnity.core.model.RoomId
 import de.connect2x.trixnity.core.model.UserId
 import de.connect2x.trixnity.core.model.events.m.room.RoomMessageEventContent
-import org.fuchss.matrix.bots.IConfig
 import org.fuchss.matrix.bots.MatrixBot
+import org.fuchss.matrix.bots.helper.isBotAdmin
 
 /**
  * Command to quit the bot and log out all sessions.
  *
  * This command is restricted to bot admins only. When executed, it stops the bot
  * and logs out all active sessions of the bot user.
- *
- * @param config The bot configuration for admin verification
  */
-class LogoutCommand(
-    private val config: IConfig
-) : Command() {
+class LogoutCommand : Command() {
     override val name: String = "logout"
     override val help: String = "quits the bot and logs out all sessions"
     override val autoAcknowledge = true
@@ -40,7 +36,7 @@ class LogoutCommand(
         textEventId: EventId,
         textEvent: RoomMessageEventContent.TextBased.Text
     ) {
-        if (!config.isBotAdmin(sender)) {
+        if (!matrixBot.isBotAdmin(sender)) {
             matrixBot.room().sendMessage(roomId) { text("You are not an admin.") }
             return
         }

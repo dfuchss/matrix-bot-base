@@ -5,20 +5,16 @@ import de.connect2x.trixnity.core.model.EventId
 import de.connect2x.trixnity.core.model.RoomId
 import de.connect2x.trixnity.core.model.UserId
 import de.connect2x.trixnity.core.model.events.m.room.RoomMessageEventContent
-import org.fuchss.matrix.bots.IConfig
 import org.fuchss.matrix.bots.MatrixBot
+import org.fuchss.matrix.bots.helper.isBotAdmin
 
 /**
  * Command to quit the bot without logging out.
  *
  * This command is restricted to bot admins only. When executed, it stops the bot
  * but preserves the active sessions, allowing the bot to resume later without re-authentication.
- *
- * @param config The bot configuration for admin verification
  */
-class QuitCommand(
-    private val config: IConfig
-) : Command() {
+class QuitCommand : Command() {
     override val name: String = "quit"
     override val help: String = "quits the bot without logging out"
     override val autoAcknowledge = true
@@ -40,7 +36,7 @@ class QuitCommand(
         textEventId: EventId,
         textEvent: RoomMessageEventContent.TextBased.Text
     ) {
-        if (!config.isBotAdmin(sender)) {
+        if (!matrixBot.isBotAdmin(sender)) {
             matrixBot.room().sendMessage(roomId) { text("You are not an admin.") }
             return
         }

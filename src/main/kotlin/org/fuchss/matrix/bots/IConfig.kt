@@ -1,7 +1,5 @@
 package org.fuchss.matrix.bots
 
-import de.connect2x.trixnity.core.model.UserId
-
 /**
  * Configuration interface for Matrix bot instances.
  *
@@ -83,26 +81,4 @@ interface IConfig {
             error("No admins specified. This is not allowed. Please specify at least one admin.")
         }
     }
-
-    /**
-     * Determine whether a user id belongs to an authorized user.
-     * @param[user] the user id to check
-     * @return indicator for authorization
-     */
-    fun isUser(user: UserId?): Boolean {
-        if (user == null) {
-            return false
-        }
-        if (users.isEmpty()) {
-            return true
-        }
-        return users.any { user.full.endsWith(it) }
-    }
-
-    /**
-     * Determine whether a user id belongs to a bot admin.
-     * @param[user] the user id to check
-     * @return indicator for admin
-     */
-    fun isBotAdmin(user: UserId?): Boolean = user != null && admins.contains(user.full)
 }

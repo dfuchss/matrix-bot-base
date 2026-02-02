@@ -27,7 +27,7 @@ fun main() {
     
     runBlocking {
         val config: IConfig = // Load config here 
-            commands = listOf(HelpCommand(config, "FancyBot") { commands }, QuitCommand(config), LogoutCommand(config), ChangeUsernameCommand(config), /* Custom commands here */)
+            commands = listOf(HelpCommand(config, "FancyBot") { commands }, QuitCommand(), LogoutCommand(), ChangeUsernameCommand(), /* Custom commands here */)
 
         val matrixClient = getMatrixClient(config)
 

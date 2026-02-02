@@ -28,6 +28,7 @@ import de.connect2x.trixnity.core.subscribeContent
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Semaphore
+import org.fuchss.matrix.bots.helper.isUser
 import org.slf4j.LoggerFactory
 import kotlin.reflect.KClass
 import kotlin.time.Clock
@@ -137,11 +138,6 @@ class MatrixBot(
     fun roomApi() = matrixClient.api.room
 
     /**
-     * Get the content mappings for [getStateEvent]
-     */
-    fun contentMappings() = matrixClient.api.room.contentMappings
-
-    /**
      * Get the state event of a certain type
      * @param[type] the type
      * @param[roomId] the roomId
@@ -169,7 +165,7 @@ class MatrixBot(
      * @return the event, or null if the state event cannot be retrieved or when an error occurs
      */
     suspend inline fun <reified C : StateEventContent> getStateEvent(roomId: RoomId): C? {
-        val type = contentMappings().state.contentType(C::class)
+        val type = roomApi().contentMappings.state.contentType(C::class)
         val stateResult = getStateEvent(type, roomId).onFailure { LoggerFactory.getLogger(MatrixBot::class.java).error(it.message, it) }
 
         val data = stateResult.getOrNull() ?: return null
@@ -322,7 +318,7 @@ class MatrixBot(
         listenNonUsers: Boolean,
         listenBotEvents: Boolean
     ): Boolean {
-        if (!config.isUser(event.senderOrNull) && !listenNonUsers) return false
+        if (!isUser(event.senderOrNull) && !listenNonUsers) return false
         if (event.senderOrNull == matrixClient.userId && !listenBotEvents) return false
         val timeOfOrigin = event.originTimestampOrNull
         return !(timeOfOrigin == null || Instant.fromEpochMilliseconds(timeOfOrigin) < runningTimestamp)
@@ -345,7 +341,7 @@ class MatrixBot(
 
         if (stateKey != self().full) return
 
-        if (!config.isUser(event.senderOrNull) || event.senderOrNull == self()) return
+        if (!isUser(event.senderOrNull) || event.senderOrNull == self()) return
 
         if (event.content.membership != Membership.INVITE) {
             return
@@ -360,6 +356,8 @@ class MatrixBot(
             .joinRoom(roomId)
             .onFailure { logger.error("Could not join room $roomId: ${it.message}", it) }
     }
+
+    internal fun config() = config
 
     /**
      * Register a JVM shutdown hook to gracefully stop the bot.

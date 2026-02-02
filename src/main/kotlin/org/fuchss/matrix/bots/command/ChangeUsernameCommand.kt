@@ -5,9 +5,9 @@ import de.connect2x.trixnity.core.model.EventId
 import de.connect2x.trixnity.core.model.RoomId
 import de.connect2x.trixnity.core.model.UserId
 import de.connect2x.trixnity.core.model.events.m.room.RoomMessageEventContent
-import org.fuchss.matrix.bots.IConfig
 import org.fuchss.matrix.bots.MatrixBot
 import org.fuchss.matrix.bots.helper.canSendMessages
+import org.fuchss.matrix.bots.helper.isBotAdmin
 import org.fuchss.matrix.bots.helper.isModerator
 
 /**
@@ -19,7 +19,6 @@ import org.fuchss.matrix.bots.helper.isModerator
  * @param globally controls whether the name change applies globally or only in the current room.
  */
 class ChangeUsernameCommand(
-    private val config: IConfig,
     private val globally: Boolean = false
 ) : Command() {
     override val name: String = "name"
@@ -53,7 +52,7 @@ class ChangeUsernameCommand(
             return
         }
 
-        if (globally && config.isBotAdmin(sender)) {
+        if (globally && matrixBot.isBotAdmin(sender)) {
             matrixBot.rename(parameters)
             return
         } else if (globally) {
