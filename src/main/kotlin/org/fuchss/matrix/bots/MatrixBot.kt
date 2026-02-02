@@ -31,7 +31,6 @@ import kotlinx.coroutines.sync.Semaphore
 import org.slf4j.LoggerFactory
 import kotlin.reflect.KClass
 import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
 /**
@@ -85,7 +84,6 @@ class MatrixBot(
 ) {
     private val logger = LoggerFactory.getLogger(MatrixBot::class.java)
 
-    @OptIn(ExperimentalTime::class)
     private val runningTimestamp = Clock.System.now()
     private val validStates = listOf(SyncState.RUNNING, SyncState.INITIAL_SYNC, SyncState.STARTED)
     private val runningLock = Semaphore(1, 1)
@@ -319,7 +317,6 @@ class MatrixBot(
      * @param listenBotEvents Whether to accept events sent by the bot itself
      * @return true if the event should be processed
      */
-    @OptIn(ExperimentalTime::class)
     private fun isValidEventFromUser(
         event: ClientEvent<*>,
         listenNonUsers: Boolean,
