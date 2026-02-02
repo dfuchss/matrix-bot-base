@@ -60,7 +60,7 @@ class ChangeUsernameCommand(
             logger.info("User $sender tried to update global bot user name")
         }
 
-        if (!sender.isModerator(matrixBot, roomId)) {
+        if (!matrixBot.isModerator(sender, roomId)) {
             matrixBot.room().sendMessage(roomId) { text("You are not a moderator in this room.") }
             return
         }

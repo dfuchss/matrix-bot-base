@@ -6,7 +6,7 @@ import de.connect2x.trixnity.core.model.UserId
 import de.connect2x.trixnity.core.model.events.m.room.RoomMessageEventContent
 import org.fuchss.matrix.bots.IConfig
 import org.fuchss.matrix.bots.MatrixBot
-import org.fuchss.matrix.bots.markdown
+import org.fuchss.matrix.bots.helper.markdown
 
 /**
  * Command that displays available bot commands and their usage.

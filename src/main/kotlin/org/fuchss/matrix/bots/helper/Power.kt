@@ -89,22 +89,22 @@ suspend fun MatrixBot.canSendMessages(
 
 /**
  * Check if a user has administrator privileges in a room.
- * @param[matrixBot] the bot instance
+ * @param[userId] the user id
  * @param[roomId] the room id
  * @return true if the user has admin power level (100) or higher
  */
-suspend fun UserId.isAdminInRoom(
-    matrixBot: MatrixBot,
+suspend fun MatrixBot.isAdminInRoom(
+    userId: UserId,
     roomId: RoomId
-): Boolean = matrixBot.powerLevel(roomId, this) >= ADMIN_POWER_LEVEL
+): Boolean = powerLevel(roomId, userId) >= ADMIN_POWER_LEVEL
 
 /**
  * Check if a user has moderator privileges in a room.
- * @param[matrixBot] the bot instance
+ * @param[userId] the user id
  * @param[roomId] the room id
  * @return true if the user has moderator power level (50) or higher
  */
-suspend fun UserId.isModerator(
-    matrixBot: MatrixBot,
+suspend fun MatrixBot.isModerator(
+    userId: UserId,
     roomId: RoomId
-): Boolean = matrixBot.powerLevel(roomId, this) >= MOD_POWER_LEVEL
+): Boolean = powerLevel(roomId, userId) >= MOD_POWER_LEVEL
