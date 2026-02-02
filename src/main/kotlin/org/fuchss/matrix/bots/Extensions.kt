@@ -92,6 +92,14 @@ suspend fun String.toInternalRoomIdOrNull(matrixBot: MatrixBot): RoomId? {
     return null
 }
 
+/**
+ * Resolve a public room alias to its internal room ID.
+ *
+ * Searches through all joined rooms to find one with a matching canonical alias or alternative alias.
+ *
+ * @param publicRoomAlias The room alias to resolve (e.g., "#room:server.com")
+ * @return The resolved room ID, or null if no matching room is found
+ */
 suspend fun MatrixBot.resolvePublicRoomIdOrNull(publicRoomAlias: String): RoomId? {
     val roomAlias = RoomAliasId(publicRoomAlias)
 

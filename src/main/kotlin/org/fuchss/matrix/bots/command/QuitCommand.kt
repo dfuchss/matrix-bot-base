@@ -8,6 +8,14 @@ import de.connect2x.trixnity.core.model.events.m.room.RoomMessageEventContent
 import org.fuchss.matrix.bots.IConfig
 import org.fuchss.matrix.bots.MatrixBot
 
+/**
+ * Command to quit the bot without logging out.
+ *
+ * This command is restricted to bot admins only. When executed, it stops the bot
+ * but preserves the active sessions, allowing the bot to resume later without re-authentication.
+ *
+ * @param config The bot configuration for admin verification
+ */
 class QuitCommand(
     private val config: IConfig
 ) : Command() {

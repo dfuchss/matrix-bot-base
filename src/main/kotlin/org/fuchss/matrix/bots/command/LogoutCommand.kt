@@ -8,6 +8,14 @@ import de.connect2x.trixnity.core.model.events.m.room.RoomMessageEventContent
 import org.fuchss.matrix.bots.IConfig
 import org.fuchss.matrix.bots.MatrixBot
 
+/**
+ * Command to quit the bot and log out all sessions.
+ *
+ * This command is restricted to bot admins only. When executed, it stops the bot
+ * and logs out all active sessions of the bot user.
+ *
+ * @param config The bot configuration for admin verification
+ */
 class LogoutCommand(
     private val config: IConfig
 ) : Command() {

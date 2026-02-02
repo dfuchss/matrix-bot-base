@@ -9,15 +9,39 @@ import org.fuchss.matrix.bots.emoji
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
+/**
+ * Abstract base class for bot commands.
+ *
+ * Commands are invoked by users through messages in Matrix rooms that match the command pattern.
+ * Each command must implement the [execute] method to define its behavior.
+ */
 abstract class Command {
     protected val logger: Logger = LoggerFactory.getLogger(this::class.java)
 
+    /**
+     * The name of the command that users will use to invoke it.
+     */
     abstract val name: String
+
+    /**
+     * Parameter description shown in help text. Empty string if command takes no parameters.
+     */
     open val params: String = ""
+
+    /**
+     * Help text describing what the command does.
+     */
     abstract val help: String
+
+    /**
+     * Whether to automatically acknowledge command execution with a reaction emoji.
+     */
     open val autoAcknowledge: Boolean = false
 
     companion object {
+        /**
+         * The emoji used to acknowledge command execution.
+         */
         @JvmStatic
         val ACK_EMOJI = ":heavy_check_mark:".emoji()
     }

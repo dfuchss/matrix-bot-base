@@ -29,13 +29,36 @@ import java.io.File
 
 private val logger: Logger = LoggerFactory.getLogger(MatrixBot::class.java)
 
+/**
+ * Create a repositories module for the bot using an H2 database.
+ * @param config The bot configuration containing the data directory path
+ * @return A configured [RepositoriesModule] using the exposed driver
+ */
 fun createRepositoriesModule(config: IConfig) =
     RepositoriesModule.exposed(database = Database.connect("jdbc:h2:${config.dataDirectory}/database;DB_CLOSE_DELAY=-1"))
 
+/**
+ * Create a media store module for the bot using the local file system.
+ * @param config The bot configuration containing the data directory path
+ * @return A configured [MediaStoreModule] using okio for file operations
+ */
 fun createMediaStoreModule(config: IConfig) = MediaStoreModule.okio(File(config.dataDirectory + "/media").toOkioPath())
 
+/**
+ * Create a crypto driver module for the bot using the vodozemac crypto library.
+ * @return A configured [CryptoDriverModule] for end-to-end encryption
+ */
 fun createCryptoDriverModule() = CryptoDriverModule.vodozemac()
 
+/**
+ * Decrypt an encrypted message event and invoke a handler with the decrypted content.
+ *
+ * Waits for the message to be decrypted with a timeout, then processes it if it's a text message.
+ *
+ * @param event The encrypted message event
+ * @param matrixBot The bot instance
+ * @param handler Function to invoke with the decrypted message details
+ */
 suspend fun decryptMessage(
     event: ClientEvent<EncryptedMessageEventContent>,
     matrixBot: MatrixBot,
@@ -62,6 +85,15 @@ suspend fun decryptMessage(
     }
 }
 
+/**
+ * Handle an encrypted command by decrypting it first and then executing the appropriate command.
+ *
+ * @param commands List of available commands
+ * @param event The encrypted message event
+ * @param matrixBot The bot instance
+ * @param config The bot configuration
+ * @param defaultCommand Optional default command to use if no matching command is found
+ */
 suspend fun handleEncryptedCommand(
     commands: List<Command>,
     event: ClientEvent<EncryptedMessageEventContent>,
@@ -74,6 +106,15 @@ suspend fun handleEncryptedCommand(
     }
 }
 
+/**
+ * Handle a plain (unencrypted) command event by executing the appropriate command.
+ *
+ * @param commands List of available commands
+ * @param event The room message event
+ * @param matrixBot The bot instance
+ * @param config The bot configuration
+ * @param defaultCommand Optional default command to use if no matching command is found
+ */
 suspend fun handleCommand(
     commands: List<Command>,
     event: ClientEvent<RoomMessageEventContent>,

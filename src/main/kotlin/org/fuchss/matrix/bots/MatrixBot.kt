@@ -232,6 +232,10 @@ class MatrixBot(
         runningLock.release()
     }
 
+    /**
+     * Change the bot's display name globally across all rooms.
+     * @param[newName] the new display name for the bot
+     */
     suspend fun rename(newName: String) {
         matrixClient.api.user
             .setProfileField(matrixClient.userId, ProfileField.DisplayName(newName))

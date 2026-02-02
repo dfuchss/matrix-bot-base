@@ -8,6 +8,15 @@ import org.fuchss.matrix.bots.IConfig
 import org.fuchss.matrix.bots.MatrixBot
 import org.fuchss.matrix.bots.markdown
 
+/**
+ * Command that displays available bot commands and their usage.
+ *
+ * Lists all registered commands with their parameters and help text in a formatted message.
+ *
+ * @param config The bot configuration containing the command prefix
+ * @param botName The display name of the bot
+ * @param commandGetter Function that returns the list of available commands
+ */
 class HelpCommand(
     private val config: IConfig,
     private val botName: String,
