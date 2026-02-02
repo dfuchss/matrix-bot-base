@@ -35,8 +35,48 @@ import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
 /**
- * This class provides encapsulates a [MatrixClient] and its [IConfig] to provide a high level bot interface.
- * If you set @param[registerJoinHandler], join events initiated by [IConfig.isUser] are handled.
+ * High-level Matrix bot framework built on top of the Trixnity Matrix client library.
+ *
+ * This class encapsulates a [MatrixClient] and its [IConfig] to provide a simplified,
+ * event-driven bot interface for Matrix chat applications. It handles:
+ * - Bot lifecycle management (start, stop, shutdown)
+ * - Event subscription and filtering
+ * - Command execution
+ * - Room membership handling
+ * - Message sending and reactions
+ * - State event management
+ * - User authorization and permissions
+ *
+ * ## Usage
+ *
+ * 1. Create a [MatrixClient] instance with appropriate configuration
+ * 2. Instantiate [MatrixBot] with the client and config
+ * 3. Subscribe to events and register command handlers
+ * 4. Call [startBlocking] to run the bot
+ *
+ * Example:
+ * ```kotlin
+ * val bot = MatrixBot(matrixClient, config)
+ * bot.subscribeContent<RoomMessageEventContent> { event ->
+ *     // Handle messages
+ * }
+ * bot.startBlocking()
+ * ```
+ *
+ * ## Event Filtering
+ *
+ * By default, the bot only processes events from authorized users (see [IConfig.isUser])
+ * and ignores events that occurred before the bot started. This behavior can be customized
+ * using the `listenNonUsers` and `listenBotEvents` parameters in subscription methods.
+ *
+ * ## Join Handler
+ *
+ * When [registerJoinHandler] is `true` (default), the bot automatically accepts room
+ * invitations from authorized users.
+ *
+ * @param matrixClient The underlying Trixnity Matrix client
+ * @param config Bot configuration including credentials and authorization
+ * @param registerJoinHandler Whether to automatically handle room invitations (default: true)
  */
 class MatrixBot(
     private val matrixClient: MatrixClient,
@@ -266,6 +306,19 @@ class MatrixBot(
             .getOrThrow()
     }
 
+    /**
+     * Determine whether an event should be processed based on its sender and timestamp.
+     *
+     * Filters events by:
+     * - User authorization status (unless listenNonUsers is true)
+     * - Bot's own events (unless listenBotEvents is true)
+     * - Event timestamp (ignores events from before bot startup)
+     *
+     * @param event The event to check
+     * @param listenNonUsers Whether to accept events from non-authorized users
+     * @param listenBotEvents Whether to accept events sent by the bot itself
+     * @return true if the event should be processed
+     */
     @OptIn(ExperimentalTime::class)
     private fun isValidEventFromUser(
         event: ClientEvent<*>,
@@ -278,6 +331,17 @@ class MatrixBot(
         return !(timeOfOrigin == null || Instant.fromEpochMilliseconds(timeOfOrigin) < runningTimestamp)
     }
 
+    /**
+     * Handle incoming room invitation events.
+     *
+     * Automatically accepts invitations if:
+     * - The invitation is for the bot itself
+     * - The inviter is an authorized user
+     * - The bot is not inviting itself
+     * - The bot hasn't already joined the room
+     *
+     * @param event The member event containing the invitation
+     */
     private suspend fun handleJoinEvent(event: ClientEvent<MemberEventContent>) {
         val roomId = event.roomIdOrNull ?: return
         val stateKey = event.stateKeyOrNull ?: return
@@ -300,6 +364,12 @@ class MatrixBot(
             .onFailure { logger.error("Could not join room $roomId: ${it.message}", it) }
     }
 
+    /**
+     * Register a JVM shutdown hook to gracefully stop the bot.
+     *
+     * Ensures that [quit] is called when the JVM terminates, allowing
+     * the bot to clean up resources and stop sync operations properly.
+     */
     private fun registerShutdownHook() {
         Runtime.getRuntime().addShutdownHook(
             object : Thread() {

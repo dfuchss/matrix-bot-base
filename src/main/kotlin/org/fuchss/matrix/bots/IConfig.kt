@@ -2,6 +2,35 @@ package org.fuchss.matrix.bots
 
 import de.connect2x.trixnity.core.model.UserId
 
+/**
+ * Configuration interface for Matrix bot instances.
+ *
+ * This interface defines all required configuration parameters for a Matrix bot,
+ * including authentication credentials, server connection details, authorization
+ * settings, and storage paths.
+ *
+ * Implementations must provide:
+ * - Matrix server connection details ([baseUrl], [username], [password])
+ * - Command prefix for bot interaction ([prefix])
+ * - Authorization lists ([admins], [users])
+ * - Local storage path ([dataDirectory])
+ *
+ * The [validate] method should be called after configuration initialization to
+ * ensure all required fields are properly set.
+ *
+ * Example implementation:
+ * ```kotlin
+ * class BotConfig : IConfig {
+ *     override val prefix = "mybot"
+ *     override val baseUrl = "https://matrix.example.org"
+ *     override val username = "botuser"
+ *     override val password = "secret"
+ *     override val dataDirectory = "/var/lib/mybot"
+ *     override val admins = listOf("@admin:example.org")
+ *     override val users = listOf(":example.org")
+ * }
+ * ```
+ */
 interface IConfig {
     /**
      * The command prefix the bot listens to. E.g., "bot"

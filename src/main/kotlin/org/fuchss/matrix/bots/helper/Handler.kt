@@ -101,6 +101,25 @@ suspend fun handleCommand(
     }
 }
 
+/**
+ * Execute a command based on the message content.
+ *
+ * Parses the message to extract the command name and parameters, then executes
+ * the matching command from the provided list. If no matching command is found
+ * and a defaultCommand is specified, that command is executed instead.
+ *
+ * The message must start with "![prefix]" to be processed as a command.
+ * If [Command.autoAcknowledge] is true, the bot reacts to the message with a checkmark emoji.
+ *
+ * @param commands List of available commands to match against
+ * @param sender The user who sent the command
+ * @param matrixBot The bot instance to use for execution
+ * @param roomId The room where the command was sent
+ * @param textEventId The event ID of the message
+ * @param textEvent The text content of the message
+ * @param config The bot configuration for prefix validation
+ * @param defaultCommand Optional fallback command name if no match is found
+ */
 private suspend fun executeCommand(
     commands: List<Command>,
     sender: UserId,
