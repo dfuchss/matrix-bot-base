@@ -108,7 +108,7 @@ suspend fun handleCommand(
  * the matching command from the provided list. If no matching command is found
  * and a defaultCommand is specified, that command is executed instead.
  *
- * The message must start with "![prefix]" to be processed as a command.
+ * The message must start with "![IConfig.prefix]" to be processed as a command.
  * If [Command.autoAcknowledge] is true, the bot reacts to the message with a checkmark emoji.
  *
  * @param commands List of available commands to match against

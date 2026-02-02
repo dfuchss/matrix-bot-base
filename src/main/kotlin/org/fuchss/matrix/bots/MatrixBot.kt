@@ -65,7 +65,7 @@ import kotlin.time.Instant
  *
  * ## Event Filtering
  *
- * By default, the bot only processes events from authorized users (see [IConfig.isUser])
+ * By default, the bot only processes events from authorized users (see [org.fuchss.matrix.bots.MatrixBot.isUser])
  * and ignores events that occurred before the bot started. This behavior can be customized
  * using the `listenNonUsers` and `listenBotEvents` parameters in subscription methods.
  *
@@ -200,7 +200,7 @@ class MatrixBot(
     fun self() = matrixClient.userId
 
     /**
-     * Subscribe to a certain class of event. Note that you can only subscribe for events that are sent by a [users][IConfig.isUser] by default.
+     * Subscribe to a certain class of event. Note that you can only subscribe for events that are sent by a [users][org.fuchss.matrix.bots.MatrixBot.isUser] by default.
      *
      * @param[clazz] the class of event to subscribe
      * @param[subscriber] the function to invoke for the events
