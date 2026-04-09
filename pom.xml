@@ -48,7 +48,7 @@
         <!-- Sync to https://github.com/benkuly/trixnity/blob/main/gradle/libs.versions.toml -->
         <trixnity.version>5.4.0</trixnity.version>
         <lognity.version>1.5.0</lognity.version>
-        <serialization.version>1.10.0</serialization.version>
+        <serialization.version>1.11.0</serialization.version>
         <couroutines-version>1.10.2</couroutines-version>
         <ktor.version>3.4.2</ktor.version>
 
