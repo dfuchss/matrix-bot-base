@@ -50,7 +50,7 @@
         <lognity.version>1.5.0</lognity.version>
         <serialization.version>1.11.0</serialization.version>
         <couroutines-version>1.10.2</couroutines-version>
-        <ktor.version>3.4.2</ktor.version>
+        <ktor.version>3.4.3</ktor.version>
 
         <sonar.organization>dfuchss</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
