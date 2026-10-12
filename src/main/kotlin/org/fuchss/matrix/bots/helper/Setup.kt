@@ -8,7 +8,7 @@ import de.connect2x.trixnity.client.media.okio.okio
 import de.connect2x.trixnity.client.store.repository.exposed.exposed
 import okio.Path.Companion.toOkioPath
 import org.fuchss.matrix.bots.IConfig
-import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.v1.r2dbc.R2dbcDatabase
 import java.io.File
 
 /**
@@ -17,7 +17,9 @@ import java.io.File
  * @return A configured [RepositoriesModule] using the exposed driver
  */
 fun createRepositoriesModule(config: IConfig) =
-    RepositoriesModule.exposed(database = Database.connect("jdbc:h2:${config.dataDirectory}/database;DB_CLOSE_DELAY=-1"))
+    RepositoriesModule.exposed(
+        database = R2dbcDatabase.connect(url = "r2dbc:h2:file:///${config.dataDirectory}/database;DB_CLOSE_DELAY=-1;")
+    )
 
 /**
  * Create a media store module for the bot using the local file system.
