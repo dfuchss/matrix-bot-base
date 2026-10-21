@@ -7,10 +7,10 @@ import de.connect2x.trixnity.client.store.TimelineEvent
 import de.connect2x.trixnity.clientserverapi.client.RoomApiClient
 import de.connect2x.trixnity.clientserverapi.client.SyncApiClient
 import de.connect2x.trixnity.clientserverapi.client.SyncState
-import de.connect2x.trixnity.clientserverapi.model.user.ProfileField
 import de.connect2x.trixnity.core.ClientEventEmitter
 import de.connect2x.trixnity.core.Subscriber
 import de.connect2x.trixnity.core.model.EventId
+import de.connect2x.trixnity.core.model.ProfileField
 import de.connect2x.trixnity.core.model.RoomId
 import de.connect2x.trixnity.core.model.UserId
 import de.connect2x.trixnity.core.model.events.ClientEvent
