@@ -50,7 +50,7 @@
         <lognity.version>2.4.0</lognity.version>
         <serialization.version>1.13.0</serialization.version>
         <couroutines-version>1.11.0</couroutines-version>
-        <ktor.version>3.5.2</ktor.version>
+        <ktor.version>3.6.1</ktor.version>
 
         <sonar.organization>dfuchss</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
@@ -59,9 +59,24 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
+                <groupId>io.ktor</groupId>
+                <artifactId>ktor-bom</artifactId>
+                <version>${ktor.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
                 <groupId>org.jetbrains.kotlinx</groupId>
                 <artifactId>kotlinx-coroutines-bom</artifactId>
                 <version>${couroutines-version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <!-- Align transitive ktor/serialization artifacts (trixnity/lognity lag behind) with the pinned versions -->
+            <dependency>
+                <groupId>org.jetbrains.kotlinx</groupId>
+                <artifactId>kotlinx-serialization-bom</artifactId>
+                <version>${serialization.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
