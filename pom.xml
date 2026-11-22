@@ -72,7 +72,7 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-            <!-- Align transitive ktor/serialization artifacts (trixnity/lognity lag behind) with the pinned versions -->
+            <!-- Align ALL kotlinx-serialization artifacts (core/json/json-io, also those pulled in by trixnity/lognity/ktor) to one version -->
             <dependency>
                 <groupId>org.jetbrains.kotlinx</groupId>
                 <artifactId>kotlinx-serialization-bom</artifactId>
@@ -186,7 +186,6 @@
         <dependency>
             <groupId>org.jetbrains.kotlinx</groupId>
             <artifactId>kotlinx-serialization-json</artifactId>
-            <version>${serialization.version}</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
